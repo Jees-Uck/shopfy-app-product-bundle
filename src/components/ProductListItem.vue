@@ -3,7 +3,12 @@
     <div v-if="product.featured_image" class="b-product__image" :style="{'background-image': 'url('+`${product.featured_image}`+')'}">
     </div>
     <div v-else class="no-image"></div>
-    {{ product.title }}
+    <div class="b-product__title">
+      {{ product.title }}
+    </div>
+    <div class="b-product__price">
+      {{ (product.price/100).toFixed(2) }}
+    </div>
     <div class="b-button__group">
       <button @click="$emit('add-product', product)"
               class="b-product__plus"
@@ -76,5 +81,8 @@ export default {
 }
 .b-product__plus:disabled, .b-product__minus:disabled {
   opacity: .3;
+}
+.b-product__price {
+  color: #734A9E;
 }
 </style>

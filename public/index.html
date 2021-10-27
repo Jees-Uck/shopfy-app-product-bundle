@@ -8,7 +8,16 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
-  <div id="max-items" class="hidden">16</div>
+  <div id="max-items" class="hidden">3</div>
+  <fieldset>
+      <legend>Pick a subscription</legend>
+      <input type="radio" name="selling_plan" value="" id="selling_plan_onetime" data-wg-notranslate="manual">
+      <label for="selling_plan_onetime">One-time purchase</label><br>
+      <input type="radio" class="radio-input" checked="checked" name="selling_plan" value="635895979" id="selling_plan_635895979" data-wg-notranslate="manual">
+      <label for="selling_plan_635895979">Delivery every day</label><br>
+      <input type="radio" class="radio-input" name="selling_plan" value="635928747" id="selling_plan_635928747" data-wg-notranslate="manual">
+      <label for="selling_plan_635928747">Delivery every 2 days</label><br>
+  </fieldset>
   <ul class="handle-list hidden">
       <li class="handle-list__item">sample-product-1</li>
       <li class="handle-list__item">sample-product-2</li>
@@ -18,7 +27,5 @@
   </ul>
   <div id="bundle-cart"></div>
     <div id="app"></div>
-    <textarea id="cart-value">
-    </textarea>
   </body>
 </html>

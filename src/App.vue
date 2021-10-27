@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <div class=""></div>
+    <div class="total">Total {{ (total/100).toFixed(2) }}</div>
+    <select class="selling-plan">
+    </select>
     <div v-if="products" class="bundle-container">
       <ProductList
           :products="products"
@@ -8,13 +10,13 @@
           @add-product="addProduct"
           @remove-product="removeProduct"
       ></ProductList>
-      <p>Edit to create your Bundle <span>({{ selecting.length }}/{{ maxItems }}  Selected)</span></p>
+      <p>Create your Bundle <span>({{ selecting.length }}/{{ maxItems }}  Selected)</span></p>
       <div class="selected-products">
         <p v-for="item in resultList"
            :key="item.id"
            class="list-item">{{ item.title }} X{{ item.quantity }}</p>
       </div>
-      <button @click.prevent="addToCart">Add to Cart</button>
+      <button :disabled="cartDisable" @click.prevent="addToCart" class="cart-add">Add to Cart</button>
     </div>
   </div>
 </template>
@@ -33,10 +35,12 @@ export default {
       products: [],
       selecting: [],
       resultList: [],
-      cartItems: [],
+      cartItems: "",
       maxItems: 0,
       quantity: 0,
       addDisable: false,
+      total: 0,
+      sellingPlan: "",
       host: "https://test.web-space.com.ua/",
     }
   },
@@ -55,9 +59,12 @@ export default {
       if (index === -1) {
         this.resultList.push(product)
       }
+      this.total += product.price
+      console.log(this.total)
     },
-    removeProduct(id) {
+    async removeProduct(id) {
       let index = this.selecting.findIndex(item => item.id === id)
+      this.total -= this.selecting[index].price
       this.selecting[index].quantity--
       this.selecting.splice(index, 1)
       let idx = this.resultList.findIndex(item => item.id === id)
@@ -78,13 +85,9 @@ export default {
     async getProducts() {
        for (let i = 0; i < this.handles.length; i++) {
          let response = axios.get(this.host + this.handles[i])
+         //let response = axios.get(this.handles[i] + '.js') //in shopify
          let data = (await response).data
          this.response_products.push(data)
-         // console.log(product)
-      //    //fetch(this.handles[i] + '.js') //in shopify
-      //   fetch(this.host + this.handles[i])
-      //       .then(response => response.json())
-      //       .then(data => this.response_products.push(data));
       }
       console.table(this.response_products)
     },
@@ -96,13 +99,25 @@ export default {
           price: product.price,
           handle: product.handle,
           featured_image: product.featured_image,
+          selling_plan: product.selling_plan,
           quantity: 0
         }
       })
     },
     addToCart() {
-      //const cartInput = document.getElementById('cart-value');
-    }
+      this.cartItems = this.resultList.map(function (product) {
+        return JSON.stringify({
+          id: product.id,
+          price: product.price,
+          quantity: product.quantity,
+          selling_plan: product.selling_plan,
+        });
+      });
+      // let cartString = "{items: [" +`${this.cartItems}}`+"]";
+      // axios.post('/cart.js', cartString)
+      console.log(this.cartItems);
+      // console.log(cartString);
+    },
   },
   created() {
     this.getMaxItems();
@@ -111,6 +126,11 @@ export default {
     await this.getHandles();
     await this.getProducts();
     await this.copyProductsWithQuantity();
+  },
+  computed: {
+    cartDisable() {
+      return this.selecting.length < this.maxItems
+    }
   }
 }
 </script>
@@ -133,5 +153,24 @@ export default {
   align-items: flex-start;
   width: 100%;
   margin-bottom: 50px;
+}
+.cart-add {
+  display: inline;
+  color: #FFF;
+  background-color: #734A9E;
+  padding: 15px;
+  max-width: 200px;
+  border-width: 0px;
+  border-radius: 30px;
+  margin-bottom: 100px;
+  cursor: pointer;
+}
+.cart-add[disabled] {
+  opacity: .3;
+}
+.total {
+  margin-bottom: 50px;
+  font-weight: bold;
+  color: #734A9E;
 }
 </style>
