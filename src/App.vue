@@ -104,7 +104,7 @@ export default {
         }
       })
     },
-    addToCart() {
+    async addToCart() {
       this.cartItems = this.resultList.map(function (product) {
         return JSON.stringify({
           id: product.id,
@@ -113,8 +113,8 @@ export default {
           selling_plan: product.selling_plan,
         });
       });
-      // let cartString = "{items: [" +`${this.cartItems}}`+"]";
-      // axios.post('/cart.js', cartString)
+      let cartString = "{items: [" +`${this.cartItems}}`+"]";
+      await axios.post('/cart.js', cartString)
       console.log(this.cartItems);
       // console.log(cartString);
     },

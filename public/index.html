@@ -1,31 +1,71 @@
 <!DOCTYPE html>
 <html lang="">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
-  </head>
-  <body>
-  <div id="max-items" class="hidden">3</div>
-  <fieldset>
-      <legend>Pick a subscription</legend>
-      <input type="radio" name="selling_plan" value="" id="selling_plan_onetime" data-wg-notranslate="manual">
-      <label for="selling_plan_onetime">One-time purchase</label><br>
-      <input type="radio" class="radio-input" checked="checked" name="selling_plan" value="635895979" id="selling_plan_635895979" data-wg-notranslate="manual">
-      <label for="selling_plan_635895979">Delivery every day</label><br>
-      <input type="radio" class="radio-input" name="selling_plan" value="635928747" id="selling_plan_635928747" data-wg-notranslate="manual">
-      <label for="selling_plan_635928747">Delivery every 2 days</label><br>
-  </fieldset>
-  <ul class="handle-list hidden">
-      <li class="handle-list__item">sample-product-1</li>
-      <li class="handle-list__item">sample-product-2</li>
-      <li class="handle-list__item">sample-product-3</li>
-      <li class="handle-list__item">sample-product-4</li>
-      <li class="handle-list__item">sample-product-5</li>
-  </ul>
-  <div id="bundle-cart"></div>
-    <div id="app"></div>
-  </body>
+</head>
+<body>
+<div id="max-items" class="hidden">3</div>
+<fieldset>
+    <legend>Pick a subscription</legend>
+    <input type="radio" name="selling_plan" value="" id="selling_plan_onetime" data-wg-notranslate="manual">
+    <label for="selling_plan_onetime">One-time purchase</label><br>
+    <input type="radio" class="radio-input" checked="checked" name="selling_plan" value="635895979"
+           id="selling_plan_635895979" data-wg-notranslate="manual">
+    <label for="selling_plan_635895979">Delivery every day</label><br>
+    <input type="radio" class="radio-input" name="selling_plan" value="635928747" id="selling_plan_635928747"
+           data-wg-notranslate="manual">
+    <label for="selling_plan_635928747">Delivery every 2 days</label><br>
+</fieldset>
+<ul class="handle-list hidden">
+    <li class="handle-list__item">sample-product-1</li>
+    <li class="handle-list__item">sample-product-2</li>
+    <li class="handle-list__item">sample-product-3</li>
+    <li class="handle-list__item">sample-product-4</li>
+    <li class="handle-list__item">sample-product-5</li>
+</ul>
+<div id="bundle-cart"></div>
+<div id="app"></div>
+<select id="Product-SingleOptionSelector-0-6538092871750" data-single-option-selector="" data-index="option1">
+    <option value="3x planted.chicken Natur" selected="selected">3x planted.chicken Natur</option>
+    <option value="3x planted.chicken BBQ">3x planted.chicken BBQ</option>
+    <option value="3x planted.chicken Güggeli">3x planted.chicken Güggeli</option>
+    <option value="Mixed planted.chicken: 1x Natur, 1x BBQ, 1x Güggeli">Mixed planted.chicken: 1x Natur, 1x BBQ, 1x
+        Güggeli
+    </option>
+    <option value="3x planted.pulled Natur">3x planted.pulled Natur</option>
+    <option value="3x planted.pulled BBQ">3x planted.pulled BBQ</option>
+    <option value="Mixed planted.pulled a: 1x Natur, 2x BBQ">Mixed planted.pulled a: 1x Natur, 2x BBQ</option>
+    <option value="Mixed planted.pulled b: 2x Natur, 1x BBQ">Mixed planted.pulled b: 2x Natur, 1x BBQ</option>
+    <option value="Natur Trio a: 2x planted.chicken Natur, 1x planted.pulled Natur">Natur Trio a: 2x planted.chicken
+        Natur, 1x planted.pulled Natur
+    </option>
+    <option value="Natur Trio b: 1x planted.chicken Natur, 2x planted.pulled Natur">Natur Trio b: 1x planted.chicken
+        Natur, 2x planted.pulled Natur
+    </option>
+    <option value="BBQ Trio a: 2x planted.chicken BBQ, 1x planted.pulled BBQ">BBQ Trio a: 2x planted.chicken BBQ, 1x
+        planted.pulled BBQ
+    </option>
+    <option value="BBQ Trio b: 1x planted.chicken BBQ, 2x planted.pulled BBQ">BBQ Trio b: 1x planted.chicken BBQ, 2x
+        planted.pulled BBQ
+    </option>
+    <option value="Besteller Trio a: 1x planted.chicken Natur, 1x planted.chicken Güggeli, 1x planted.pulled Natur">
+        Besteller Trio a: 1x planted.chicken Natur, 1x planted.chicken Güggeli, 1x planted.pulled Natur
+    </option>
+    <option value="Besteller Trio b: 1x planted.chicken Natur, 1x planted.chicken Güggeli, 1x planted.pulled BBQ">
+        Besteller Trio b: 1x planted.chicken Natur, 1x planted.chicken Güggeli, 1x planted.pulled BBQ
+    </option>
+</select>
+
+planted.chicken Natur
+planted.chicken BBQ
+planted.chicken Güggeli
+planted.pulled Natur
+planted.pulled BBQ
+
+
+</body>
 </html>
