@@ -1,10 +1,11 @@
 <template>
-  <div class="b-product-list">
+  <div id="bundle-list" class="b-product-list">
   <ProductListItem class="b-product"
                    v-for="product in products"
                    :add-disable="addDisable"
                    :product="product"
                    :key="product.id"
+                   :currency="currency"
                    @add-product="addProduct"
                    @remove-product="removeProduct"
   ></ProductListItem>
@@ -24,6 +25,10 @@ export default {
     addDisable: {
       type: Boolean,
       required: true
+    },
+    currency: {
+      type: String,
+      required: false
     }
   },
   methods: {
@@ -37,7 +42,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .b-product-list {
   display: flex;
   flex-direction: row;

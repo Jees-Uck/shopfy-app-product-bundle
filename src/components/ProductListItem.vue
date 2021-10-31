@@ -7,7 +7,7 @@
       {{ product.title }}
     </div>
     <div class="b-product__price">
-      {{ (product.price/100).toFixed(2) }}
+      {{ (product.price/100).toFixed(2) }} {{ currency }}
     </div>
     <div class="b-button__group">
       <button @click="$emit('add-product', product)"
@@ -34,6 +34,10 @@ export default {
     addDisable: {
       type: Boolean,
       required: true
+    },
+    currency: {
+      type: String,
+      required: false,
     }
   },
   computed: {
@@ -44,7 +48,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .b-product {
   display: flex;
   flex-direction: column;

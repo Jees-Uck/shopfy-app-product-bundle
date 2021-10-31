@@ -8,7 +8,8 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
 </head>
 <body>
-<div id="max-items" class="hidden">3</div>
+<div id="max-items" class="hidden">10</div>
+<div id="discount-value">10</div>
 <fieldset>
     <legend>Pick a subscription</legend>
     <input type="radio" name="selling_plan" value="" id="selling_plan_onetime" data-wg-notranslate="manual">
@@ -27,44 +28,21 @@
     <li class="handle-list__item">sample-product-4</li>
     <li class="handle-list__item">sample-product-5</li>
 </ul>
+<div id="currency">EUR</div>
 <div id="bundle-cart"></div>
 <div id="app"></div>
-<select id="Product-SingleOptionSelector-0-6538092871750" data-single-option-selector="" data-index="option1">
-    <option value="3x planted.chicken Natur" selected="selected">3x planted.chicken Natur</option>
-    <option value="3x planted.chicken BBQ">3x planted.chicken BBQ</option>
-    <option value="3x planted.chicken Güggeli">3x planted.chicken Güggeli</option>
-    <option value="Mixed planted.chicken: 1x Natur, 1x BBQ, 1x Güggeli">Mixed planted.chicken: 1x Natur, 1x BBQ, 1x
-        Güggeli
-    </option>
-    <option value="3x planted.pulled Natur">3x planted.pulled Natur</option>
-    <option value="3x planted.pulled BBQ">3x planted.pulled BBQ</option>
-    <option value="Mixed planted.pulled a: 1x Natur, 2x BBQ">Mixed planted.pulled a: 1x Natur, 2x BBQ</option>
-    <option value="Mixed planted.pulled b: 2x Natur, 1x BBQ">Mixed planted.pulled b: 2x Natur, 1x BBQ</option>
-    <option value="Natur Trio a: 2x planted.chicken Natur, 1x planted.pulled Natur">Natur Trio a: 2x planted.chicken
-        Natur, 1x planted.pulled Natur
-    </option>
-    <option value="Natur Trio b: 1x planted.chicken Natur, 2x planted.pulled Natur">Natur Trio b: 1x planted.chicken
-        Natur, 2x planted.pulled Natur
-    </option>
-    <option value="BBQ Trio a: 2x planted.chicken BBQ, 1x planted.pulled BBQ">BBQ Trio a: 2x planted.chicken BBQ, 1x
-        planted.pulled BBQ
-    </option>
-    <option value="BBQ Trio b: 1x planted.chicken BBQ, 2x planted.pulled BBQ">BBQ Trio b: 1x planted.chicken BBQ, 2x
-        planted.pulled BBQ
-    </option>
-    <option value="Besteller Trio a: 1x planted.chicken Natur, 1x planted.chicken Güggeli, 1x planted.pulled Natur">
-        Besteller Trio a: 1x planted.chicken Natur, 1x planted.chicken Güggeli, 1x planted.pulled Natur
-    </option>
-    <option value="Besteller Trio b: 1x planted.chicken Natur, 1x planted.chicken Güggeli, 1x planted.pulled BBQ">
-        Besteller Trio b: 1x planted.chicken Natur, 1x planted.chicken Güggeli, 1x planted.pulled BBQ
-    </option>
-</select>
-
-planted.chicken Natur
-planted.chicken BBQ
-planted.chicken Güggeli
-planted.pulled Natur
-planted.pulled BBQ
+<div class="hidden">
+    planted.chicken Natur
+    planted.chicken BBQ
+    planted.chicken Güggeli
+    planted.pulled Natur
+    planted.pulled BBQ
+</div>
+<style>
+    .hidden {
+        display: none;
+    }
+</style>
 
 
 </body>
