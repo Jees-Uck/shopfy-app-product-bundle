@@ -1,6 +1,7 @@
 <template>
   <div id="bundle-list" class="b-product-list">
-  <ProductListItem class="b-product"
+    <carousel :settings="settings" :breakpoints="breakpoints">
+    <ProductListItem class="b-product"
                    v-for="product in products"
                    :add-disable="addDisable"
                    :product="product"
@@ -9,14 +10,20 @@
                    @add-product="addProduct"
                    @remove-product="removeProduct"
   ></ProductListItem>
+      <template #addons>
+        <navigation />
+      </template>
+    </carousel>
   </div>
 </template>
 
 <script>
 import ProductListItem from "./ProductListItem";
+import 'vue3-carousel/dist/carousel.css';
+import { Carousel, Navigation } from 'vue3-carousel';
 export default {
   name: "ProductList",
-  components: {ProductListItem},
+  components: {ProductListItem, Carousel, Navigation},
   props: {
     products: {
       type: Object,
@@ -29,6 +36,26 @@ export default {
     currency: {
       type: String,
       required: false
+    }
+  },
+  data() {
+    return {
+      settings: {
+        itemsToShow: 1,
+        snapAlign: 'center',
+      },
+      breakpoints: {
+        // 700px and up
+        500: {
+          itemsToShow: 3,
+          snapAlign: 'center',
+        },
+        // 1024 and up
+        1350: {
+          itemsToShow: 5,
+          snapAlign: 'start',
+        },
+      },
     }
   },
   methods: {
@@ -48,7 +75,11 @@ export default {
   flex-direction: row;
   gap: 20px;
   width: 100%;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
+}
+.b-product-list .carousel {
+  margin-right: -10px;
+  margin-left: -10px;
 }
 
 </style>

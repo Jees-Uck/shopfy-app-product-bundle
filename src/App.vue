@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div v-if="products" class="bundle-container">
-      <p class="b-heading"><b>Create your Bundle <span v-if="discount"> and save {{ discount }}% </span></b><span>({{ selecting.length }}/{{ maxItems }}  Selected)</span></p>
+      <p class="b-heading"><span class="b-heading__title">Create your Bundle </span><span v-if="discount" class="b-heading__discount"> and save {{ discount }}% </span><span class="b-heading__selecting">({{ selecting.length }}/{{ maxItems }}  Selected)</span></p>
       <div v-if="discount">
         <div class="total">Total: <span class="new-price">{{ ((total - total*discount/100)/100).toFixed(2) }} {{ currency }}</span>
           <span v-if="total" class="old-price">{{ (total / 100).toFixed(2) }} {{ currency }}</span></div>
@@ -93,8 +93,8 @@ export default {
     },
     async getProducts() {
       for (let i = 0; i < this.handles.length; i++) {
-        let response = await axios.get(this.host + this.handles[i])
-        //let response = await axios.get(this.handles[i] + '.js') //in shopify
+        //let response = await axios.get(this.host + this.handles[i])
+        let response = await axios.get(this.handles[i] + '.js') //in shopify
         let data = response.data
         this.response_products.push(data)
       }
@@ -135,7 +135,7 @@ export default {
       setTimeout(() => {
         this.message.visible = false
         console.log(this.message)
-      }, 2000)
+      }, 3000)
     },
     async addToCart() {
       this.cartItems = this.resultList.map(function (product) {
@@ -163,7 +163,6 @@ export default {
       await this.showCartMessage()
       this.hideCartMessage()
     },
-
   },
 
   created() {
@@ -184,7 +183,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 #app {
 }
 .bundle-container {
@@ -201,8 +200,8 @@ export default {
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 30px;
-  min-height: 30px;
+  margin-bottom: 25px;
+  min-height: 25px;
 }
 .cart-add {
   display: inline;
@@ -233,7 +232,7 @@ export default {
   text-decoration: line-through;
 }
 .new-price {
-  margin-right: 20px;
+  margin-right: 10px;
 }
 .cart-message {
   position: absolute;
@@ -257,5 +256,9 @@ export default {
   opacity: 1;
   height: auto;
 }
-
+.carousel {
+  width: 100%;
+}
+.b-heading__title, .b-heading__discount {
+}
 </style>

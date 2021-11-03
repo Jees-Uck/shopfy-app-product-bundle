@@ -1,5 +1,5 @@
 <template>
-  <div class="b-product">
+  <slide class="b-product">
     <div v-if="product.featured_image" class="b-product__image" :style="{'background-image': 'url('+`${product.featured_image}`+')'}">
     </div>
     <div v-else class="no-image"></div>
@@ -20,12 +20,15 @@
               :disabled="rmDisable"
       >-</button>
     </div>
-  </div>
+  </slide>
 </template>
 
 <script>
+import 'vue3-carousel/dist/carousel.css';
+import { Slide } from 'vue3-carousel';
 export default {
   name: "ProductListItem",
+  components: {Slide},
   props: {
     product: {
       type: Object,
@@ -54,11 +57,15 @@ export default {
   flex-direction: column;
   gap: 10px;
   text-align: center;
+  padding: 0 10px;
 }
 .b-product__image {
- display: block;
+  width: 100%;
+  display: block;
   min-height: 90px;
   background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 .b-button__group {
   display: flex;
