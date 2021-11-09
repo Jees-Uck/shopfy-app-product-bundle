@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <div v-if="products" class="bundle-container">
-      <p class="b-heading"><span class="b-heading__title">Create your Bundle </span><span v-if="discount" class="b-heading__discount"> and save {{ discount }}% </span><span class="b-heading__selecting">({{ selecting.length }}/{{ maxItems }}  Selected)</span></p>
+      <p class="b-heading">
+        <span class="b-heading__title">Create your Bundle </span><span v-if="discount" class="b-heading__discount"> and save {{ discount }}% </span><span class="b-heading__selecting">({{ selecting.length }}/{{ maxItems }}  Selected)</span></p>
       <div v-if="discount">
         <div class="total">Total: <span class="new-price">{{ ((total - total*discount/100)/100).toFixed(2) }} {{ currency }}</span>
           <span v-if="total" class="old-price">{{ (total / 100).toFixed(2) }} {{ currency }}</span></div>
@@ -26,6 +27,7 @@
         </transition>
       </div>
       <button :disabled="cartDisable" @click.prevent="addToCart" class="cart-add" id="add-bundle">Add to Cart</button>
+      <button :disabled="buyNowDisable" @click.prevent="moveToCheckout" class="buy-now" id="buy-now">Buy Now</button>
     </div>
   </div>
 </template>
@@ -53,8 +55,9 @@ export default {
       currency: "",
       message: {
         visible: false,
-        text: "Bundle added to your cart"
+        text: "Bundle added to your cart. "
       },
+      checkoutLink: "",
       host: "https://test.web-space.com.ua/",
     }
   },
@@ -70,7 +73,6 @@ export default {
         this.resultList.push(product)
       }
       this.total += product.price
-      console.log(this.total)
     },
     async removeProduct(id) {
       let index = this.selecting.findIndex(item => item.id === id)
@@ -104,9 +106,9 @@ export default {
       this.products = this.response_products.map(function (product) {
         if (product.variants?.[0].available) {
           return {
-            id: product.variants?.[0].id,
+            id: product.variants[0].id,
             title: product.title,
-            price: product.price,
+            price: product.variants[0].price,
             handle: product.handle,
             featured_image: product.featured_image,
             quantity: 0
@@ -135,7 +137,7 @@ export default {
       setTimeout(() => {
         this.message.visible = false
         console.log(this.message)
-      }, 3000)
+      }, 4000)
     },
     async addToCart() {
       this.cartItems = this.resultList.map(function (product) {
@@ -154,7 +156,6 @@ export default {
         items
       })
 
-      console.log(items);
       this.updateCartCounter()
       this.copyProductsWithQuantity()
       this.selecting = []
@@ -163,6 +164,16 @@ export default {
       await this.showCartMessage()
       this.hideCartMessage()
     },
+    createCheckoutLink () {
+      let products = this.resultList.map(function (product) {
+        return product.id + ':' + product.quantity
+      })
+      this.checkoutLink = '/cart/' + products + '?discount=Bundle_Discount_' + this.discount
+    },
+    async moveToCheckout () {
+      await this.createCheckoutLink()
+      window.location.href = this.checkoutLink
+    }
   },
 
   created() {
@@ -174,9 +185,12 @@ export default {
   },
   computed: {
     addDisable() {
-      return this.selecting.length >= this.maxItems;
+      return this.selecting.length >= this.maxItems
     },
     cartDisable() {
+      return this.selecting.length < this.maxItems
+    },
+    buyNowDisable() {
       return this.selecting.length < this.maxItems
     }
   }
@@ -208,7 +222,6 @@ export default {
   color: #FFF;
   background-color: #734A9E;
   padding: 15px;
-  max-width: 200px;
   border-width: 0;
   border-radius: 30px;
   margin-bottom: 30px;

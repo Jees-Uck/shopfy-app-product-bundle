@@ -45,13 +45,23 @@ export default {
         snapAlign: 'center',
       },
       breakpoints: {
-        // 700px and up
         500: {
           itemsToShow: 3,
           snapAlign: 'center',
         },
-        // 1024 and up
-        1350: {
+        768: {
+          itemsToShow: 2,
+          snapAlign: 'center',
+        },
+        940: {
+          itemsToShow: 3,
+          snapAlign: 'center',
+        },
+        1200: {
+          itemsToShow: 4,
+          snapAlign: 'start',
+        },
+        1400: {
           itemsToShow: 5,
           snapAlign: 'start',
         },
