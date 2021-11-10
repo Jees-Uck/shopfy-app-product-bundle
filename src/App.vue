@@ -2,12 +2,18 @@
   <div id="app">
     <div v-if="products" class="bundle-container">
       <p class="b-heading">
-        <span class="b-heading__title">{{ text.title }}</span><span v-if="discount" class="b-heading__discount">&nbsp;{{ text.discount_text }} {{ discount }}% </span><span class="b-heading__selecting">({{ selecting.length }}/{{ maxItems }}  {{ text.selected_text }})</span></p>
+        <span class="b-heading__title"></span>
+        <span v-if="discount" class="b-heading__discount">
+          {{ discount }}% </span>
+        <span class="b-heading__selecting">({{ selecting.length }}/{{ maxItems }} )</span>
+      </p>
       <div v-if="discount">
-        <div class="total">{{ text.total_text }}: <span class="new-price">{{ ((total - total*discount/100)/100).toFixed(2) }} {{ currency }}</span>
-          <span v-if="total" class="old-price">{{ (total / 100).toFixed(2) }} {{ currency }}</span></div>
+        <div class="total">
+          <span class="new-price">{{ ((total - total * discount / 100) / 100).toFixed(2) }} {{ currency }}</span>
+          <span v-if="total" class="old-price">{{ (total / 100).toFixed(2) }} {{ currency }}</span>
+        </div>
       </div>
-      <div v-else class="total">Total: {{ (total / 100).toFixed(2) }} {{ currency }}</div>
+      <div v-else class="total"> {{ (total / 100).toFixed(2) }} {{ currency }}</div>
       <ProductList
           :products="products"
           :currency="currency"
@@ -16,18 +22,26 @@
           @remove-product="removeProduct"
       ></ProductList>
       <div class="selected-products">
-        <p v-show="resultList.length" class="selected-title">{{ text.selected_products }}</p>
+        <p v-show="resultList.length" class="selected-title"></p>
         <p v-for="item in resultList"
            :key="item.id"
            class="list-item">
-         <span>{{ item.title }} X{{ item.quantity }}</span>
+          <span>{{ item.title }} X{{ item.quantity }}</span>
         </p>
         <transition name="slide-fade">
-          <div v-show="message.visible" class="cart-message">{{ text.cart_message }}</div>
+          <div v-show="message.visible" class="cart-message"></div>
         </transition>
       </div>
-      <button :disabled="cartDisable" @click.prevent="addToCart" class="cart-add" id="add-bundle">{{ text.cart_text }}</button>
-      <button :disabled="cartDisable" @click.prevent="moveToCheckout" class="buy-now" id="buy-now">{{ text.checkout_text }}</button>
+      <button
+          :disabled="cartDisable"
+          @click.prevent="addToCart"
+          class="cart-add"
+          id="add-bundle"> </button>
+      <button
+          :disabled="cartDisable"
+          @click.prevent="moveToCheckout"
+          class="buy-now"
+          id="buy-now"></button>
     </div>
   </div>
 </template>
@@ -53,6 +67,7 @@ export default {
       sellingPlan: "",
       discount: 0,
       currency: "",
+      locale: document.documentElement.lang,
       message: {
         visible: false,
         text: "Bundle added to your cart. "
@@ -86,6 +101,7 @@ export default {
       }
     },
     getAppDataFromHtml() {
+      this.locale = document.documentElement.lang
       const handleList = document.querySelectorAll('.handle-list__item');
       for (let i = 0; i < handleList.length; i++) {
         this.handles.push(handleList[i].innerText);
@@ -96,8 +112,8 @@ export default {
     },
     async getProducts() {
       for (let i = 0; i < this.handles.length; i++) {
-        let response = await axios.get(this.host + this.handles[i])
-        //let response = await axios.get(this.handles[i] + '.js') //in shopify
+        //let response = await axios.get(this.host + this.handles[i])
+        let response = await axios.get(this.handles[i] + '.js') //in shopify
         let data = response.data
         this.response_products.push(data)
       }
@@ -163,21 +179,21 @@ export default {
       await this.showCartMessage();
       this.hideCartMessage();
     },
-    createCheckoutLink () {
+    createCheckoutLink() {
       let products = this.resultList.map(function (product) {
         return product.id + ':' + product.quantity
       })
       this.checkoutLink = '/cart/' + products + '?discount=Bundle_Discount_' + this.discount
     },
-    async moveToCheckout () {
+    async moveToCheckout() {
       await this.createCheckoutLink();
       window.location.href = this.checkoutLink;
     },
-    async getTranslations () {
+    async getTranslations() {
       let transitionUri = document.getElementById('translation-url').innerText;
-      let locale = document.documentElement.lang;
       this.text = await axios.get(transitionUri)
-      .then(response => response.data[locale]);
+          .then(response => response.data);
+      this.text = this.text[this.locale]
       console.log(this.text)
     }
   },
@@ -188,7 +204,7 @@ export default {
   async mounted() {
     await this.getProducts();
     await this.copyProductsWithQuantity();
-    await this.getTranslations ();
+    await this.getTranslations();
   },
   computed: {
     addDisable() {
@@ -258,7 +274,8 @@ export default {
 .slide-fade-enter-active, .slide-fade-leave-active {
   transition: all .3s;
 }
-.slide-fade-enter, .slide-fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.slide-fade-enter, .slide-fade-leave-to /* .fade-leave-active below version 2.1.8 */
+{
   opacity: 0;
   height: 0;
 }
@@ -267,7 +284,6 @@ export default {
   opacity: 0;
   height: 0;
 }
-
 .slide-fade-leave-from,
 .slide-fade-enter-to {
   opacity: 1;
