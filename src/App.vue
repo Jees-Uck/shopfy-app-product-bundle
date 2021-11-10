@@ -2,9 +2,9 @@
   <div id="app">
     <div v-if="products" class="bundle-container">
       <p class="b-heading">
-        <span class="b-heading__title">Create your Bundle </span><span v-if="discount" class="b-heading__discount"> and save {{ discount }}% </span><span class="b-heading__selecting">({{ selecting.length }}/{{ maxItems }}  Selected)</span></p>
+        <span class="b-heading__title">{{ text.title }}</span><span v-if="discount" class="b-heading__discount">&nbsp;{{ text.discount_text }} {{ discount }}% </span><span class="b-heading__selecting">({{ selecting.length }}/{{ maxItems }}  {{ text.selected_text }})</span></p>
       <div v-if="discount">
-        <div class="total">Total: <span class="new-price">{{ ((total - total*discount/100)/100).toFixed(2) }} {{ currency }}</span>
+        <div class="total">{{ text.total_text }}: <span class="new-price">{{ ((total - total*discount/100)/100).toFixed(2) }} {{ currency }}</span>
           <span v-if="total" class="old-price">{{ (total / 100).toFixed(2) }} {{ currency }}</span></div>
       </div>
       <div v-else class="total">Total: {{ (total / 100).toFixed(2) }} {{ currency }}</div>
@@ -16,18 +16,18 @@
           @remove-product="removeProduct"
       ></ProductList>
       <div class="selected-products">
-        <p v-show="resultList.length" class="selected-title">Selected Products:</p>
+        <p v-show="resultList.length" class="selected-title">{{ text.selected_products }}</p>
         <p v-for="item in resultList"
            :key="item.id"
            class="list-item">
          <span>{{ item.title }} X{{ item.quantity }}</span>
         </p>
         <transition name="slide-fade">
-          <div v-show="message.visible" class="cart-message">{{ message.text }}</div>
+          <div v-show="message.visible" class="cart-message">{{ text.cart_message }}</div>
         </transition>
       </div>
-      <button :disabled="cartDisable" @click.prevent="addToCart" class="cart-add" id="add-bundle">Add to Cart</button>
-      <button :disabled="buyNowDisable" @click.prevent="moveToCheckout" class="buy-now" id="buy-now">Buy Now</button>
+      <button :disabled="cartDisable" @click.prevent="addToCart" class="cart-add" id="add-bundle">{{ text.cart_text }}</button>
+      <button :disabled="cartDisable" @click.prevent="moveToCheckout" class="buy-now" id="buy-now">{{ text.checkout_text }}</button>
     </div>
   </div>
 </template>
@@ -58,6 +58,7 @@ export default {
         text: "Bundle added to your cart. "
       },
       checkoutLink: "",
+      text: {},
       host: "https://test.web-space.com.ua/",
     }
   },
@@ -95,16 +96,15 @@ export default {
     },
     async getProducts() {
       for (let i = 0; i < this.handles.length; i++) {
-        //let response = await axios.get(this.host + this.handles[i])
-        let response = await axios.get(this.handles[i] + '.js') //in shopify
+        let response = await axios.get(this.host + this.handles[i])
+        //let response = await axios.get(this.handles[i] + '.js') //in shopify
         let data = response.data
         this.response_products.push(data)
       }
-      console.table(this.response_products)
     },
     copyProductsWithQuantity() {
-      this.products = this.response_products.map(function (product) {
-        if (product.variants?.[0].available) {
+      this.products = this.response_products.map(product => {
+        if (product.variants[0].available) {
           return {
             id: product.variants[0].id,
             title: product.title,
@@ -123,7 +123,7 @@ export default {
           })
           .then(cart => {
             const counter = document.getElementById('CartToggleItemCount');
-            cart = cart.data
+            cart = cart.data;
             if (cart.item_count) {
               counter.innerHTML = cart.item_count;
               counter.classList.remove('hidden');
@@ -136,7 +136,6 @@ export default {
     hideCartMessage() {
       setTimeout(() => {
         this.message.visible = false
-        console.log(this.message)
       }, 4000)
     },
     async addToCart() {
@@ -148,7 +147,7 @@ export default {
         };
       });
       let items = this.cartItems;
-      let url = '/cart/add.js'
+      let url = '/cart/add.js';
       await axios.post(url, {
         headers: {
           'Content-Type': 'application/json',
@@ -156,13 +155,13 @@ export default {
         items
       })
 
-      this.updateCartCounter()
-      this.copyProductsWithQuantity()
-      this.selecting = []
-      this.resultList = []
-      this.total = 0
-      await this.showCartMessage()
-      this.hideCartMessage()
+      this.updateCartCounter();
+      this.copyProductsWithQuantity();
+      this.selecting = [];
+      this.resultList = [];
+      this.total = 0;
+      await this.showCartMessage();
+      this.hideCartMessage();
     },
     createCheckoutLink () {
       let products = this.resultList.map(function (product) {
@@ -171,8 +170,15 @@ export default {
       this.checkoutLink = '/cart/' + products + '?discount=Bundle_Discount_' + this.discount
     },
     async moveToCheckout () {
-      await this.createCheckoutLink()
-      window.location.href = this.checkoutLink
+      await this.createCheckoutLink();
+      window.location.href = this.checkoutLink;
+    },
+    async getTranslations () {
+      let transitionUri = document.getElementById('translation-url').innerText;
+      let locale = document.documentElement.lang;
+      this.text = await axios.get(transitionUri)
+      .then(response => response.data[locale]);
+      console.log(this.text)
     }
   },
 
@@ -180,17 +186,15 @@ export default {
     this.getAppDataFromHtml()
   },
   async mounted() {
-    await this.getProducts()
-    await this.copyProductsWithQuantity()
+    await this.getProducts();
+    await this.copyProductsWithQuantity();
+    await this.getTranslations ();
   },
   computed: {
     addDisable() {
       return this.selecting.length >= this.maxItems
     },
     cartDisable() {
-      return this.selecting.length < this.maxItems
-    },
-    buyNowDisable() {
       return this.selecting.length < this.maxItems
     }
   }
@@ -273,5 +277,22 @@ export default {
   width: 100%;
 }
 .b-heading__title, .b-heading__discount {
+}
+.buy-now {
+  background-color: #b2d436;
+  border-color: #b2d436;
+  border-width: 0;
+  border-radius: 30px;
+  margin-bottom: 30px;
+  padding: 14px 50px;
+  min-width: 250px;
+  transition: opacity ease .2s;
+  color: #FFFFFF;
+}
+button {
+  cursor: pointer;
+}
+button:disabled, button[disabled] {
+  opacity: .5;
 }
 </style>

@@ -10,15 +10,15 @@
       {{ (product.price/100).toFixed(2) }} {{ currency }}
     </div>
     <div class="b-button__group">
-      <button @click="$emit('add-product', product)"
-              class="b-product__plus"
-              :disabled="addDisable"
-      >+</button>
-     <span class="b-product__counter">{{ product.quantity }}</span>
       <button @click="$emit('remove-product', product.id)"
               class="b-product__minus"
               :disabled="rmDisable"
       >-</button>
+      <span class="b-product__counter">{{ product.quantity }}</span>
+      <button @click="$emit('add-product', product)"
+              class="b-product__plus"
+              :disabled="addDisable"
+      >+</button>
     </div>
   </slide>
 </template>
