@@ -1,19 +1,34 @@
 <template>
   <div id="app">
+    <input v-model="$i18n.locale" id="vue-lang" class="vue-lang"/>
     <div v-if="products" class="bundle-container">
       <p class="b-heading">
-        <span class="b-heading__title"></span>
+        <span class="b-heading__title">{{ $t('title') }}</span>
         <span v-if="discount" class="b-heading__discount">
-          {{ discount }}% </span>
-        <span class="b-heading__selecting">({{ selecting.length }}/{{ maxItems }} )</span>
+          {{ $t('discount_text') }}
+          {{ discount }}%
+        </span>
+        <span class="b-heading__selecting">
+          ({{ selecting.length }}/{{ maxItems }}
+          {{ $t('selected_text') }})
+        </span>
       </p>
       <div v-if="discount">
-        <div class="total">
-          <span class="new-price">{{ ((total - total * discount / 100) / 100).toFixed(2) }} {{ currency }}</span>
-          <span v-if="total" class="old-price">{{ (total / 100).toFixed(2) }} {{ currency }}</span>
+        <div class="total">{{ $t('total_text') }}:
+          <span class="new-price">
+            {{ ((total - total * discount / 100) / 100).toFixed(2) }}
+            {{ currency }}
+          </span>
+          <span v-if="total" class="old-price">
+            {{ (total / 100).toFixed(2) }}
+            {{ currency }}
+          </span>
         </div>
       </div>
-      <div v-else class="total"> {{ (total / 100).toFixed(2) }} {{ currency }}</div>
+      <div v-else class="total">
+        {{ (total / 100).toFixed(2) }}
+        {{ currency }}
+      </div>
       <ProductList
           :products="products"
           :currency="currency"
@@ -22,26 +37,30 @@
           @remove-product="removeProduct"
       ></ProductList>
       <div class="selected-products">
-        <p v-show="resultList.length" class="selected-title"></p>
+        <p v-show="resultList.length" class="selected-title">
+          {{ $t('selected_products') }}
+        </p>
         <p v-for="item in resultList"
            :key="item.id"
            class="list-item">
           <span>{{ item.title }} X{{ item.quantity }}</span>
         </p>
         <transition name="slide-fade">
-          <div v-show="message.visible" class="cart-message"></div>
+          <div v-show="messageVisible" class="cart-message">
+            {{ $t('cart_message') }}
+          </div>
         </transition>
       </div>
       <button
           :disabled="cartDisable"
           @click.prevent="addToCart"
           class="cart-add"
-          id="add-bundle"> </button>
+          id="add-bundle">{{ $t('cart_text') }}</button>
       <button
           :disabled="cartDisable"
           @click.prevent="moveToCheckout"
           class="buy-now"
-          id="buy-now"></button>
+          id="buy-now">{{ $t('checkout_text') }}</button>
     </div>
   </div>
 </template>
@@ -67,13 +86,9 @@ export default {
       sellingPlan: "",
       discount: 0,
       currency: "",
-      locale: document.documentElement.lang,
-      message: {
-        visible: false,
-        text: "Bundle added to your cart. "
-      },
+      langs: ['en', 'de', 'fr'],
+      messageVisible: false,
       checkoutLink: "",
-      text: {},
       host: "https://test.web-space.com.ua/",
     }
   },
@@ -90,7 +105,7 @@ export default {
       }
       this.total += product.price
     },
-    async removeProduct(id) {
+    removeProduct(id) {
       let index = this.selecting.findIndex(item => item.id === id)
       this.total -= this.selecting[index].price
       this.selecting[index].quantity--
@@ -101,7 +116,6 @@ export default {
       }
     },
     getAppDataFromHtml() {
-      this.locale = document.documentElement.lang
       const handleList = document.querySelectorAll('.handle-list__item');
       for (let i = 0; i < handleList.length; i++) {
         this.handles.push(handleList[i].innerText);
@@ -111,11 +125,15 @@ export default {
       this.currency = document.getElementById('currency').innerText;
     },
     async getProducts() {
-      for (let i = 0; i < this.handles.length; i++) {
-        //let response = await axios.get(this.host + this.handles[i])
-        let response = await axios.get(this.handles[i] + '.js') //in shopify
-        let data = response.data
-        this.response_products.push(data)
+      try {
+        for (let i = 0; i < this.handles.length; i++) {
+          //const response = await axios.get(this.host + this.handles[i])
+          const response = await axios.get(this.handles[i] + '.js') //in shopify
+          let data = response.data
+          this.response_products.push(data)
+        }
+      } catch (err) {
+        console.error('Products fetched with error: ', err)
       }
     },
     copyProductsWithQuantity() {
@@ -125,62 +143,74 @@ export default {
             id: product.variants[0].id,
             title: product.title,
             price: product.variants[0].price,
-            handle: product.handle,
             featured_image: product.featured_image,
             quantity: 0
           }
         }
       })
     },
-    updateCartCounter() {
-      axios.get('/cart.js')
-          .then(response => {
-            return response
-          })
-          .then(cart => {
-            const counter = document.getElementById('CartToggleItemCount');
-            cart = cart.data;
-            if (cart.item_count) {
-              counter.innerHTML = cart.item_count;
-              counter.classList.remove('hidden');
-            }
-          })
+    async updateCartCounter() {
+      const counter = document.getElementById('CartToggleItemCount');
+      try {
+        const cartData = await axios.get('/cart.js');
+        const cart = cartData.data;
+        if (cart.item_count) {
+          counter.innerHTML = cart.item_count;
+          counter.classList.remove('hidden');
+        }
+      } catch (err) {
+        console.error('Update counter error ', err)
+      }
+
+      // axios.get('/cart.js')
+      //     .then(response => {
+      //       return response
+      //     })
+      //     .then(cart => {
+      //       const counter = document.getElementById('CartToggleItemCount');
+      //       cart = cart.data;
+      //       if (cart.item_count) {
+      //         counter.innerHTML = cart.item_count;
+      //         counter.classList.remove('hidden');
+      //       }
+      //     })
     },
-    showCartMessage() {
-      this.message.visible = true;
-    },
-    hideCartMessage() {
+    displayMessage() {
+      this.messageVisible = true;
       setTimeout(() => {
-        this.message.visible = false
+        this.messageVisible = false
       }, 4000)
     },
     async addToCart() {
-      this.cartItems = this.resultList.map(function (product) {
-        return {
-          id: product.id,
-          price: product.price,
-          quantity: product.quantity,
-        };
-      });
-      let items = this.cartItems;
-      let url = '/cart/add.js';
-      await axios.post(url, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        items
-      })
+      try {
+        this.cartItems = this.resultList.map(product => {
+          return {
+            id: product.id,
+            price: product.price,
+            quantity: product.quantity,
+          };
+        });
+        let items = this.cartItems;
+        let url = '/cart/add.js';
+        await axios.post(url, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          items
+        })
 
-      this.updateCartCounter();
-      this.copyProductsWithQuantity();
-      this.selecting = [];
-      this.resultList = [];
-      this.total = 0;
-      await this.showCartMessage();
-      this.hideCartMessage();
+        this.copyProductsWithQuantity();
+        this.selecting = [];
+        this.resultList = [];
+        this.total = 0;
+        await this.updateCartCounter();
+        this.displayMessage();
+      } catch (err) {
+        console.error('Add to cart error: ', err)
+      }
     },
     createCheckoutLink() {
-      let products = this.resultList.map(function (product) {
+      let products = this.resultList.map(product => {
         return product.id + ':' + product.quantity
       })
       this.checkoutLink = '/cart/' + products + '?discount=Bundle_Discount_' + this.discount
@@ -188,13 +218,6 @@ export default {
     async moveToCheckout() {
       await this.createCheckoutLink();
       window.location.href = this.checkoutLink;
-    },
-    async getTranslations() {
-      let transitionUri = document.getElementById('translation-url').innerText;
-      this.text = await axios.get(transitionUri)
-          .then(response => response.data);
-      this.text = this.text[this.locale]
-      console.log(this.text)
     }
   },
 
@@ -203,8 +226,7 @@ export default {
   },
   async mounted() {
     await this.getProducts();
-    await this.copyProductsWithQuantity();
-    await this.getTranslations();
+    this.copyProductsWithQuantity();
   },
   computed: {
     addDisable() {
@@ -312,3 +334,37 @@ button:disabled, button[disabled] {
   opacity: .5;
 }
 </style>
+<i18n>
+{
+  "de": {
+    "title": "Erstellen Sie Ihr Bundle ",
+    "discount_text": " und speichern",
+    "total_text": "Insgesamt",
+    "selected_text": "Ausgewählte",
+    "selected_products": "Ausgewählte Produkte:",
+    "cart_text": "Zum Einkaufswagen hinzufügen",
+    "cart_message": "Bundle zum Warenkorb hinzugefügt. Der Rabatt wird an der Kasse angewendet.",
+    "checkout_text": "Jetzt kaufen"
+  },
+  "en": {
+    "title": "Create your Bundle ",
+    "discount_text": "and save",
+    "total_text": "Total",
+    "selected_text": "Selected",
+    "selected_products": "Selected Products:",
+    "cart_text": "Add to Cart",
+    "cart_message": "Bundle added to your cart. Discount will be applied in checkout",
+    "checkout_text": "Buy Now"
+  },
+  "fr": {
+    "title": "Créez votre offre groupée ",
+    "discount_text": "et enregistrez",
+    "total_text": "Total",
+    "selected_text": "Sélectionné",
+    "selected_products": "Produits sélectionnés",
+    "cart_text": "Ajouter au panier",
+    "cart_message": "L'ensemble a été ajouté à votre panier. La remise sera appliquée lors du passage à la caisse",
+    "checkout_text": "Acheter maintenant"
+  }
+}
+</i18n>
