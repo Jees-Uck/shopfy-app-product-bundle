@@ -1,3 +1,10 @@
 {
-  "message": "hello i18n !!"
+  "title": "Create your planted.set ",
+  "discount_text": "and save",
+  "total_text": "Total",
+  "selected_text": "Selected",
+  "selected_products": "Selected Products:",
+  "cart_text": "Add to cart",
+  "cart_message": "Your planted.set has been added to the cart. The discount will be deducted at checkout. ",
+  "checkout_text": "Buy Now"
 }

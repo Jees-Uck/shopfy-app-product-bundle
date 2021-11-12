@@ -86,10 +86,10 @@ export default {
       sellingPlan: "",
       discount: 0,
       currency: "",
-      langs: ['en', 'de', 'fr'],
+      langs: ['en', 'de', 'fr', 'it'],
       messageVisible: false,
       checkoutLink: "",
-      host: "https://test.web-space.com.ua/",
+      // host: "https://test.web-space.com.ua/",
     }
   },
   components: {
@@ -161,19 +161,6 @@ export default {
       } catch (err) {
         console.error('Update counter error ', err)
       }
-
-      // axios.get('/cart.js')
-      //     .then(response => {
-      //       return response
-      //     })
-      //     .then(cart => {
-      //       const counter = document.getElementById('CartToggleItemCount');
-      //       cart = cart.data;
-      //       if (cart.item_count) {
-      //         counter.innerHTML = cart.item_count;
-      //         counter.classList.remove('hidden');
-      //       }
-      //     })
     },
     displayMessage() {
       this.messageVisible = true;
@@ -334,37 +321,3 @@ button:disabled, button[disabled] {
   opacity: .5;
 }
 </style>
-<i18n>
-{
-  "de": {
-    "title": "Erstellen Sie Ihr Bundle ",
-    "discount_text": " und speichern",
-    "total_text": "Insgesamt",
-    "selected_text": "Ausgewählte",
-    "selected_products": "Ausgewählte Produkte:",
-    "cart_text": "Zum Einkaufswagen hinzufügen",
-    "cart_message": "Bundle zum Warenkorb hinzugefügt. Der Rabatt wird an der Kasse angewendet.",
-    "checkout_text": "Jetzt kaufen"
-  },
-  "en": {
-    "title": "Create your Bundle ",
-    "discount_text": "and save",
-    "total_text": "Total",
-    "selected_text": "Selected",
-    "selected_products": "Selected Products:",
-    "cart_text": "Add to Cart",
-    "cart_message": "Bundle added to your cart. Discount will be applied in checkout",
-    "checkout_text": "Buy Now"
-  },
-  "fr": {
-    "title": "Créez votre offre groupée ",
-    "discount_text": "et enregistrez",
-    "total_text": "Total",
-    "selected_text": "Sélectionné",
-    "selected_products": "Produits sélectionnés",
-    "cart_text": "Ajouter au panier",
-    "cart_message": "L'ensemble a été ajouté à votre panier. La remise sera appliquée lors du passage à la caisse",
-    "checkout_text": "Acheter maintenant"
-  }
-}
-</i18n>
