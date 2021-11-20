@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <input v-model="$i18n.locale" id="vue-lang" class="vue-lang"/>
+    <input v-model="sellingPlan" id="selling-plan" class="selling-plan">
     <div v-if="products" class="bundle-container">
       <p class="b-heading">
         <span class="b-heading__title">{{ $t('title') }}</span>
@@ -89,7 +90,7 @@ export default {
       langs: ['en', 'de', 'fr', 'it'],
       messageVisible: false,
       checkoutLink: "",
-      // host: "https://test.web-space.com.ua/",
+      //host: "https://test.web-space.com.ua/",
     }
   },
   components: {
@@ -125,28 +126,27 @@ export default {
       this.currency = document.getElementById('currency').innerText;
     },
     async getProducts() {
-      try {
-        for (let i = 0; i < this.handles.length; i++) {
+      for (let i = 0; i < this.handles.length; i++) {
+        try {
           //const response = await axios.get(this.host + this.handles[i])
           const response = await axios.get(this.handles[i] + '.js') //in shopify
           let data = response.data
           this.response_products.push(data)
+        } catch (err) {
+          console.error('Product fetched with error: ', err)
         }
-      } catch (err) {
-        console.error('Products fetched with error: ', err)
       }
     },
     copyProductsWithQuantity() {
       this.products = this.response_products.map(product => {
-        if (product.variants[0].available) {
           return {
             id: product.variants[0].id,
             title: product.title,
             price: product.variants[0].price,
             featured_image: product.featured_image,
+            available: product.variants[0].available,
             quantity: 0
           }
-        }
       })
     },
     async updateCartCounter() {
@@ -175,6 +175,7 @@ export default {
             id: product.id,
             price: product.price,
             quantity: product.quantity,
+            selling_plan: this.sellingPlan
           };
         });
         let items = this.cartItems;
@@ -185,22 +186,24 @@ export default {
           },
           items
         })
-
-        this.copyProductsWithQuantity();
-        this.selecting = [];
-        this.resultList = [];
-        this.total = 0;
         await this.updateCartCounter();
-        this.displayMessage();
       } catch (err) {
         console.error('Add to cart error: ', err)
       }
+      this.copyProductsWithQuantity();
+      this.selecting = [];
+      this.resultList = [];
+      this.total = 0;
+      this.sellingPlan = "";
+      this.displayMessage();
     },
     createCheckoutLink() {
       let products = this.resultList.map(product => {
         return product.id + ':' + product.quantity
       })
-      this.checkoutLink = '/cart/' + products + '?discount=Bundle_Discount_' + this.discount
+      this.checkoutLink = '/cart/' + products
+          + '?discount=Bundle_Discount_' + this.discount
+          + '&selling_plan=' + this.sellingPlan
     },
     async moveToCheckout() {
       await this.createCheckoutLink();

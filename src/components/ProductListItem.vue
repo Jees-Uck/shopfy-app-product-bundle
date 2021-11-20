@@ -1,5 +1,5 @@
 <template>
-  <slide class="b-product">
+  <slide v-if="product.available" class="b-product">
     <div v-if="product.featured_image" class="b-product__image" :style="{'background-image': 'url('+`${product.featured_image}`+')'}">
     </div>
     <div v-else class="no-image"></div>
