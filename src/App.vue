@@ -2,7 +2,7 @@
   <div id="app">
     <input v-model="$i18n.locale" id="vue-lang" class="vue-lang"/>
     <input v-model="sellingPlan" id="selling-plan" class="selling-plan">
-    <div v-if="products" class="bundle-container">
+    <div v-if="products.length" class="bundle-container">
       <p class="b-heading">
         <span class="b-heading__title">{{ $t('title') }}</span>
         <span v-if="discount" class="b-heading__discount">
@@ -62,6 +62,11 @@
           @click.prevent="moveToCheckout"
           class="buy-now"
           id="buy-now">{{ $t('checkout_text') }}</button>
+    </div>
+    <div v-else>
+      <p class="empty">
+        {{ $t('empty_text') }}
+      </p>
     </div>
   </div>
 </template>

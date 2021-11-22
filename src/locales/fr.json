@@ -6,5 +6,6 @@
   "selected_products": "Produits sélectionnés:",
   "cart_text": "Ajouter au panier",
   "cart_message": "Votre ensemble planté a été ajouté au panier. La remise sera déduite à la caisse.",
-  "checkout_text": "Acheter maintenant"
+  "checkout_text": "Acheter maintenant",
+  "empty_text": "Il n'y a pas de produits disponibles dans cet ensemble. \nSélectionnez un autre ensemble s'il vous plaît"
 }

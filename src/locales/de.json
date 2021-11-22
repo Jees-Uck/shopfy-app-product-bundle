@@ -6,5 +6,6 @@
   "selected_products": "Ausgewählte Produkte:",
   "cart_text": "Zum Einkaufswagen hinzufügen",
   "cart_message": "Dein planted.set wurde zum Warenkorb hinzugefügt. Der Rabatt wird im Checkout abgezogen.",
-  "checkout_text": "Jetzt kaufen"
+  "checkout_text": "Jetzt kaufen",
+  "empty_text": "Es sind keine Produkte in diesem Set vorhanden.\nWählen Sie ein anderes Set bitte"
 }
