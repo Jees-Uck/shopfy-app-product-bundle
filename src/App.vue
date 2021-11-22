@@ -137,28 +137,15 @@ export default {
     async getProducts() {
       for (let i = 0; i < this.handles.length; i++) {
         try {
-          const response = await axios.get(this.host + this.handles[i])
-          //const response = await axios.get(this.handles[i] + '.js') //in shopify
+          //const response = await axios.get(this.host + this.handles[i])
+          const response = await axios.get(this.handles[i] + '.js') //in shopify
           let data = response.data
-          setTimeout(() => this.response_products.push(data), 100)
-          //this.response_products.push(data)
+          this.response_products.push(data);
         } catch (err) {
           console.error('Product fetched with error: ', err)
         }
       }
     },
-    // getProducts() {
-    //     for (let i = 0; i < this.handles.length; i++) {
-    //       try {
-    //         const response = axios.get(this.host + this.handles[i])
-    //         //const response = await axios.get(this.handles[i] + '.js') //in shopify
-    //         let data = response.data
-    //         this.response_products.push(data)
-    //       } catch (err) {
-    //         console.error('Product fetched with error: ', err)
-    //       }
-    //     }
-    // },
     copyProductsWithQuantity() {
       this.products = this.response_products.map(product => {
           return {
