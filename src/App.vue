@@ -2,7 +2,8 @@
   <div id="app">
     <input v-model="$i18n.locale" id="vue-lang" class="vue-lang"/>
     <input v-model="sellingPlan" id="selling-plan" class="selling-plan">
-    <div v-if="products.length" class="bundle-container">
+    <spinner v-if="loading"></spinner>
+    <div v-else-if="products.length" class="bundle-container">
       <p class="b-heading">
         <span class="b-heading__title">{{ $t('title') }}</span>
         <span v-if="discount" class="b-heading__discount">
@@ -75,6 +76,7 @@
 
 import ProductList from "./components/ProductList";
 import axios from "axios";
+import Spinner from "./components/Spinner";
 
 export default {
   name: 'App',
@@ -95,10 +97,12 @@ export default {
       langs: ['en', 'de', 'fr', 'it'],
       messageVisible: false,
       checkoutLink: "",
-      //host: "https://test.web-space.com.ua/",
+      loading: true,
+      host: "https://test.web-space.com.ua/",
     }
   },
   components: {
+    Spinner,
     ProductList
   },
   methods: {
@@ -133,15 +137,28 @@ export default {
     async getProducts() {
       for (let i = 0; i < this.handles.length; i++) {
         try {
-          //const response = await axios.get(this.host + this.handles[i])
-          const response = await axios.get(this.handles[i] + '.js') //in shopify
+          const response = await axios.get(this.host + this.handles[i])
+          //const response = await axios.get(this.handles[i] + '.js') //in shopify
           let data = response.data
-          this.response_products.push(data)
+          setTimeout(() => this.response_products.push(data), 100)
+          //this.response_products.push(data)
         } catch (err) {
           console.error('Product fetched with error: ', err)
         }
       }
     },
+    // getProducts() {
+    //     for (let i = 0; i < this.handles.length; i++) {
+    //       try {
+    //         const response = axios.get(this.host + this.handles[i])
+    //         //const response = await axios.get(this.handles[i] + '.js') //in shopify
+    //         let data = response.data
+    //         this.response_products.push(data)
+    //       } catch (err) {
+    //         console.error('Product fetched with error: ', err)
+    //       }
+    //     }
+    // },
     copyProductsWithQuantity() {
       this.products = this.response_products.map(product => {
           return {
@@ -222,6 +239,7 @@ export default {
   async mounted() {
     await this.getProducts();
     this.copyProductsWithQuantity();
+    this.loading = false;
   },
   computed: {
     addDisable() {
