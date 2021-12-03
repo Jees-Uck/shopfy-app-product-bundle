@@ -2,7 +2,7 @@
   <div id="app">
     <input v-model="$i18n.locale" id="vue-lang" class="vue-lang"/>
     <input v-model="sellingPlan" id="selling-plan" class="selling-plan">
-    <spinner v-if="loading"></spinner>
+    <Spinner v-if="loading"></Spinner>
     <div v-else-if="products.length" class="bundle-container">
       <p class="b-heading">
         <span class="b-heading__title">{{ $t('title') }}</span>
@@ -98,7 +98,7 @@ export default {
       messageVisible: false,
       checkoutLink: "",
       loading: true,
-      host: "https://test.web-space.com.ua/",
+      //host: "https://test.web-space.com.ua/",
     }
   },
   components: {
@@ -171,6 +171,10 @@ export default {
         console.error('Update counter error ', err)
       }
     },
+    setDiscount () {
+      const discount = 'Bundle_Discount_' + this.discount;
+      localStorage.setItem('discount', discount);
+    },
     displayMessage() {
       this.messageVisible = true;
       setTimeout(() => {
@@ -196,6 +200,8 @@ export default {
           items
         })
         await this.updateCartCounter();
+        this.setDiscount();
+        this.displayMessage();
       } catch (err) {
         console.error('Add to cart error: ', err)
       }
@@ -204,7 +210,6 @@ export default {
       this.resultList = [];
       this.total = 0;
       this.sellingPlan = "";
-      this.displayMessage();
     },
     createCheckoutLink() {
       let products = this.resultList.map(product => {
