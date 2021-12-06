@@ -1,6 +1,9 @@
 <template>
-  <slide v-if="product.available" class="b-product">
-    <div v-if="product.featured_image" class="b-product__image" :style="{'background-image': 'url('+`${product.featured_image}`+')'}">
+  <slide v-if="productIsAvailable"
+         class="b-product">
+    <div v-if="product.featured_image"
+         class="b-product__image"
+         :style="{'background-image': 'url('+`${product.featured_image}`+')'}">
     </div>
     <div v-else class="no-image"></div>
     <div class="b-product__title">
@@ -9,15 +12,19 @@
     <div class="b-product__price">
       {{ (product.price/100).toFixed(2) }} {{ currency }}
     </div>
+    <div>
+      <div>{{ product.sellingPlanIDs }}</div>
+      <div style="background-color: antiquewhite">{{ sellingPlan }}</div>
+    </div>
     <div class="b-button__group">
       <button @click="$emit('remove-product', product.id)"
               class="b-product__minus"
-              :disabled="rmDisable"
+              :disabled="removeIsDisable"
       >-</button>
       <span class="b-product__counter">{{ product.quantity }}</span>
       <button @click="$emit('add-product', product)"
               class="b-product__plus"
-              :disabled="addDisable"
+              :disabled="addIsDisable"
       >+</button>
     </div>
   </slide>
@@ -34,18 +41,28 @@ export default {
       type: Object,
       required: true
     },
-    addDisable: {
+    addIsDisable: {
       type: Boolean,
       required: true
     },
     currency: {
       type: String,
       required: false,
+    },
+    sellingPlan: {
+      type: String,
+      required: true
     }
   },
+  mounted() {
+    console.log(this.product.sellingPlanIDs)
+  },
   computed: {
-    rmDisable () {
+    removeIsDisable () {
       return this.product.quantity <= 0
+    },
+    productIsAvailable () {
+      return (this.sellingPlan === "" || this.product.sellingPlanIDs.includes(this.sellingPlan)) && this.product.available
     }
   }
 }

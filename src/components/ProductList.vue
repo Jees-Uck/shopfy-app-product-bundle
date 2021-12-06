@@ -3,10 +3,11 @@
     <carousel :settings="settings" :breakpoints="breakpoints">
     <ProductListItem class="b-product"
                    v-for="product in products"
-                   :add-disable="addDisable"
+                   :add-disable="addIsDisable"
                    :product="product"
                    :key="product.id"
                    :currency="currency"
+                     :selling-plan="sellingPlan"
                    @add-product="addProduct"
                    @remove-product="removeProduct"
   ></ProductListItem>
@@ -29,11 +30,15 @@ export default {
       type: Object,
       required: true
     },
-    addDisable: {
+    addIsDisable: {
       type: Boolean,
       required: true
     },
     currency: {
+      type: String,
+      required: false
+    },
+    sellingPlan: {
       type: String,
       required: false
     }

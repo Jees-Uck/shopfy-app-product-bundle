@@ -1,30 +1,36 @@
 <template>
   <div id="app">
-    <input v-model="$i18n.locale" id="vue-lang" class="vue-lang"/>
-    <input v-model="sellingPlan" id="selling-plan" class="selling-plan">
+    <input v-model="$i18n.locale"
+           id="vue-lang"
+           class="vue-lang"/>
+    <input v-model="sellingPlan"
+           id="selling-plan"
+           class="selling-plan"
+           placeholder="Selling Plan"
+           @input="resetSelecting">
     <Spinner v-if="loading"></Spinner>
     <div v-else-if="products.length" class="bundle-container">
-      <p class="b-heading">
-        <span class="b-heading__title">{{ $t('title') }}</span>
-        <span v-if="discount" class="b-heading__discount">
+      <div class="b-heading">
+        <div class="b-heading__title">{{ $t('title') }}</div>
+        <div v-if="discount" class="b-heading__discount">
           {{ $t('discount_text') }}
           {{ discount }}%
-        </span>
-        <span class="b-heading__selecting">
+        </div>
+        <div class="b-heading__selecting">
           ({{ selecting.length }}/{{ maxItems }}
           {{ $t('selected_text') }})
-        </span>
-      </p>
+        </div>
+      </div>
       <div v-if="discount">
         <div class="total">{{ $t('total_text') }}:
-          <span class="new-price">
+          <div class="new-price">
             {{ ((total - total * discount / 100) / 100).toFixed(2) }}
             {{ currency }}
-          </span>
-          <span v-if="total" class="old-price">
+          </div>
+          <div v-if="total" class="old-price">
             {{ (total / 100).toFixed(2) }}
             {{ currency }}
-          </span>
+          </div>
         </div>
       </div>
       <div v-else class="total">
@@ -34,19 +40,20 @@
       <ProductList
           :products="products"
           :currency="currency"
-          :add-disable="addDisable"
+          :add-disable="addIsDisable"
+          :selling-plan="sellingPlan"
           @add-product="addProduct"
           @remove-product="removeProduct"
       ></ProductList>
       <div class="selected-products">
-        <p v-show="resultList.length" class="selected-title">
+        <div v-show="resultList.length" class="selected-title">
           {{ $t('selected_products') }}
-        </p>
-        <p v-for="item in resultList"
+        </div>
+        <div v-for="item in resultList"
            :key="item.id"
            class="list-item">
-          <span>{{ item.title }} X{{ item.quantity }}</span>
-        </p>
+          <div>{{ item.title }} X{{ item.quantity }}</div>
+        </div>
         <transition name="slide-fade">
           <div v-show="messageVisible" class="cart-message">
             {{ $t('cart_message') }}
@@ -54,15 +61,17 @@
         </transition>
       </div>
       <button
-          :disabled="cartDisable"
+          :disabled="cartIsDisable"
           @click.prevent="addToCart"
           class="cart-add"
-          id="add-bundle">{{ $t('cart_text') }}</button>
+          id="add-bundle">{{ $t('cart_text') }}
+      </button>
       <button
-          :disabled="cartDisable"
+          :disabled="cartIsDisable"
           @click.prevent="moveToCheckout"
           class="buy-now"
-          id="buy-now">{{ $t('checkout_text') }}</button>
+          id="buy-now">{{ $t('checkout_text') }}
+      </button>
     </div>
     <div v-else>
       <p class="empty">
@@ -98,6 +107,7 @@ export default {
       messageVisible: false,
       checkoutLink: "",
       loading: true,
+      plansAreEqual: true,
       //host: "https://test.web-space.com.ua/",
     }
   },
@@ -131,7 +141,7 @@ export default {
         this.handles.push(handleList[i].innerText);
       }
       this.maxItems = document.getElementById('max-items').innerText;
-      this.discount = document.getElementById('discount-value').innerText;
+      this.discount = parseInt(document.getElementById('discount-value').innerText);
       this.currency = document.getElementById('currency').innerText;
     },
     async getProducts() {
@@ -148,15 +158,49 @@ export default {
     },
     copyProductsWithQuantity() {
       this.products = this.response_products.map(product => {
-          return {
-            id: product.variants[0].id,
-            title: product.title,
-            price: product.variants[0].price,
-            featured_image: product.featured_image,
-            available: product.variants[0].available,
-            quantity: 0
-          }
+        let sellingPlans = []
+
+        product.variants[0].selling_plan_allocations.forEach(item => {
+          sellingPlans.push(item.selling_plan_id.toString())
+          sellingPlans.sort()
+        })
+
+        return {
+          id: product.variants[0].id,
+          title: product.title,
+          price: product.variants[0].price,
+          featured_image: product.featured_image,
+          available: product.variants[0].available,
+          sellingPlanIDs: sellingPlans,
+          quantity: 0
+        }
       })
+    },
+
+    resetSelecting() {
+      if (!this.plansAreEqual) {
+        this.products.forEach(product => {
+          product.quantity = 0
+        })
+        this.selecting = [];
+        this.resultList = [];
+        this.total = 0;
+      }
+    },
+
+    checkProductsPlans() {
+      const plansToCompare = this.products.map((product) => {
+        return {
+          plans: product.sellingPlanIDs.join('')
+        }
+      })
+
+      for (let i = 0; i < plansToCompare.length; i++) {
+        if (plansToCompare[i].plans !== plansToCompare[i + 1].plans) {
+          this.plansAreEqual = false
+          return
+        }
+      }
     },
     async updateCartCounter() {
       const counter = document.getElementById('CartToggleItemCount');
@@ -171,7 +215,7 @@ export default {
         console.error('Update counter error ', err)
       }
     },
-    setDiscount () {
+    setDiscount() {
       const discount = 'Bundle_Discount_' + this.discount;
       localStorage.setItem('discount', discount);
     },
@@ -193,6 +237,8 @@ export default {
         });
         let items = this.cartItems;
         let url = '/cart/add.js';
+        //console.log('Cart items: ', items)
+        //let url =  this.host + 'cart/add.js'; // test API
         await axios.post(url, {
           headers: {
             'Content-Type': 'application/json',
@@ -230,14 +276,15 @@ export default {
   },
   async mounted() {
     await this.getProducts();
-    this.copyProductsWithQuantity();
+    await this.copyProductsWithQuantity();
     this.loading = false;
+    this.checkProductsPlans();
   },
   computed: {
-    addDisable() {
+    addIsDisable() {
       return this.selecting.length >= this.maxItems
     },
-    cartDisable() {
+    cartIsDisable() {
       return this.selecting.length < this.maxItems
     }
   }
