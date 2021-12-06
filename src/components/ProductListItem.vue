@@ -12,10 +12,6 @@
     <div class="b-product__price">
       {{ (product.price/100).toFixed(2) }} {{ currency }}
     </div>
-    <div>
-      <div>{{ product.sellingPlanIDs }}</div>
-      <div style="background-color: antiquewhite">{{ sellingPlan }}</div>
-    </div>
     <div class="b-button__group">
       <button @click="$emit('remove-product', product.id)"
               class="b-product__minus"
