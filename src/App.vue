@@ -4,10 +4,11 @@
            id="vue-lang"
            class="vue-lang"/>
     <input v-model="sellingPlan"
-           id="selling-plan"
+           id="selling-plan-vue"
            class="selling-plan"
            placeholder="Selling Plan"
            @input="resetSelecting">
+    <input id="recurring-vue" placeholder="Recurring">
     <Spinner v-if="loading"></Spinner>
     <div v-else-if="products.length" class="bundle-container">
       <div class="b-heading">
@@ -108,7 +109,7 @@ export default {
       checkoutLink: "",
       loading: true,
       plansAreEqual: true,
-      //host: "https://test.web-space.com.ua/",
+      host: "https://test.web-space.com.ua/",
     }
   },
   components: {
@@ -246,7 +247,9 @@ export default {
           items
         })
         await this.updateCartCounter();
-        this.setDiscount();
+        if (!this.sellingPlan) {
+          this.setDiscount();
+        }
         this.displayMessage();
       } catch (err) {
         console.error('Add to cart error: ', err)
@@ -261,9 +264,14 @@ export default {
       let products = this.resultList.map(product => {
         return product.id + ':' + product.quantity
       })
-      this.checkoutLink = '/cart/' + products
-          + '?discount=Bundle_Discount_' + this.discount
-          + '&selling_plan=' + this.sellingPlan
+      if (!this.sellingPlan) {
+        this.checkoutLink = '/cart/' + products
+            + '?discount=Bundle_Discount_' + this.discount
+            + '&selling_plan=' + this.sellingPlan
+      } else {
+        this.checkoutLink = '/cart/' + products
+            + '&selling_plan=' + this.sellingPlan
+      }
     },
     async moveToCheckout() {
       await this.createCheckoutLink();

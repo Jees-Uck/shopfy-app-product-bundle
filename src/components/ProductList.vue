@@ -1,18 +1,18 @@
 <template>
   <div id="bundle-list" class="b-product-list">
     <carousel :settings="settings" :breakpoints="breakpoints">
-    <ProductListItem class="b-product"
-                   v-for="product in products"
-                   :add-disable="addIsDisable"
-                   :product="product"
-                   :key="product.id"
-                   :currency="currency"
-                     :selling-plan="sellingPlan"
-                   @add-product="addProduct"
-                   @remove-product="removeProduct"
-  ></ProductListItem>
+      <ProductListItem class="b-product"
+                       v-for="product in products"
+                       :add-disable="addDisable"
+                       :product="product"
+                       :key="product.id"
+                       :currency="currency"
+                       :selling-plan="sellingPlan"
+                       @add-product="addProduct"
+                       @remove-product="removeProduct"
+      ></ProductListItem>
       <template #addons>
-        <navigation />
+        <navigation/>
       </template>
     </carousel>
   </div>
@@ -21,7 +21,8 @@
 <script>
 import ProductListItem from "./ProductListItem";
 import 'vue3-carousel/dist/carousel.css';
-import { Carousel, Navigation } from 'vue3-carousel';
+import {Carousel, Navigation} from 'vue3-carousel';
+
 export default {
   name: "ProductList",
   components: {ProductListItem, Carousel, Navigation},
@@ -30,7 +31,7 @@ export default {
       type: Object,
       required: true
     },
-    addIsDisable: {
+    addDisable: {
       type: Boolean,
       required: true
     },
@@ -77,7 +78,7 @@ export default {
     addProduct(product) {
       this.$emit('add-product', product)
     },
-    removeProduct(id){
+    removeProduct(id) {
       this.$emit('remove-product', id)
     }
   }

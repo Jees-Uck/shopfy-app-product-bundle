@@ -20,7 +20,7 @@
       <span class="b-product__counter">{{ product.quantity }}</span>
       <button @click="$emit('add-product', product)"
               class="b-product__plus"
-              :disabled="addIsDisable"
+              :disabled="addDisable"
       >+</button>
     </div>
   </slide>
@@ -37,7 +37,7 @@ export default {
       type: Object,
       required: true
     },
-    addIsDisable: {
+    addDisable: {
       type: Boolean,
       required: true
     },
