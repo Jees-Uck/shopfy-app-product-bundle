@@ -8,7 +8,7 @@
            class="selling-plan"
            placeholder="Selling Plan"
            @input="resetSelecting">
-    <input id="recurring-vue" placeholder="Recurring">
+    <input v-model="recurringPeriod" id="recurring-vue" placeholder="Recurring">
     <Spinner v-if="loading"></Spinner>
     <div v-else-if="products.length" class="bundle-container">
       <div class="b-heading">
@@ -67,7 +67,7 @@
           class="cart-add"
           id="add-bundle">{{ $t('cart_text') }}
       </button>
-      <button
+      <button v-if="isOneTimePurchase"
           :disabled="cartIsDisable"
           @click.prevent="moveToCheckout"
           class="buy-now"
@@ -109,6 +109,7 @@ export default {
       checkoutLink: "",
       loading: true,
       plansAreEqual: true,
+      recurringPeriod: "",
       host: "https://test.web-space.com.ua/",
     }
   },
@@ -258,8 +259,8 @@ export default {
       this.selecting = [];
       this.resultList = [];
       this.total = 0;
-      this.sellingPlan = "";
     },
+
     createCheckoutLink() {
       let products = this.resultList.map(product => {
         return product.id + ':' + product.quantity
@@ -276,7 +277,12 @@ export default {
     async moveToCheckout() {
       await this.createCheckoutLink();
       window.location.href = this.checkoutLink;
+    },
+    getRecurringAttributes () {
+      let cartAttributes = document.querySelectorAll('.sls-cart-attribute');
+      console.log(cartAttributes)
     }
+
   },
 
   created() {
@@ -287,6 +293,7 @@ export default {
     await this.copyProductsWithQuantity();
     this.loading = false;
     this.checkProductsPlans();
+    this.getRecurringAttributes ();
   },
   computed: {
     addIsDisable() {
@@ -294,6 +301,9 @@ export default {
     },
     cartIsDisable() {
       return this.selecting.length < this.maxItems
+    },
+    isOneTimePurchase () {
+      return !this.sellingPlan && !this.recurringPeriod
     }
   }
 }
