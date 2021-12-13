@@ -1,3 +1,43 @@
+<script setup>
+import 'vue3-carousel/dist/carousel.css';
+import { Slide } from 'vue3-carousel';
+import {defineProps, defineEmits, computed} from "vue";
+
+const props = defineProps({
+  product: {
+    type: Object,
+    required: true
+  },
+  addDisable: {
+    type: Boolean,
+    required: true
+  },
+  currency: {
+    type: String,
+    required: false,
+  },
+  sellingPlan: {
+    type: String,
+    required: true
+  }
+})
+const emits = defineEmits(['add-product', 'remove-product'])
+
+const addProduct = (product) => {
+  emits('add-product', product)
+}
+const removeProduct = (id) => {
+  emits('remove-product', id)
+}
+const removeIsDisable = computed(() => {
+  return props.product.quantity <= 0
+})
+
+const productIsAvailable = computed(() => {
+  return (props.sellingPlan === "" || props.product.sellingPlanIDs.includes(props.sellingPlan)) && props.product.available
+})
+
+</script>
 <template>
   <slide v-if="productIsAvailable"
          class="b-product">
@@ -13,56 +53,18 @@
       {{ (product.price/100).toFixed(2) }} {{ currency }}
     </div>
     <div class="b-button__group">
-      <button @click="$emit('remove-product', product.id)"
+      <button @click="removeProduct(product.id)"
               class="b-product__minus"
               :disabled="removeIsDisable"
       >-</button>
       <span class="b-product__counter">{{ product.quantity }}</span>
-      <button @click="$emit('add-product', product)"
+      <button @click="addProduct(product)"
               class="b-product__plus"
               :disabled="addDisable"
       >+</button>
     </div>
   </slide>
 </template>
-
-<script>
-import 'vue3-carousel/dist/carousel.css';
-import { Slide } from 'vue3-carousel';
-export default {
-  name: "ProductListItem",
-  components: {Slide},
-  props: {
-    product: {
-      type: Object,
-      required: true
-    },
-    addDisable: {
-      type: Boolean,
-      required: true
-    },
-    currency: {
-      type: String,
-      required: false,
-    },
-    sellingPlan: {
-      type: String,
-      required: true
-    }
-  },
-  mounted() {
-    console.log(this.product.sellingPlanIDs)
-  },
-  computed: {
-    removeIsDisable () {
-      return this.product.quantity <= 0
-    },
-    productIsAvailable () {
-      return (this.sellingPlan === "" || this.product.sellingPlanIDs.includes(this.sellingPlan)) && this.product.available
-    }
-  }
-}
-</script>
 
 <style>
 .b-product {
