@@ -1,26 +1,26 @@
 <script setup>
-import {defineProps, defineEmits} from "vue"
-import ProductListItem from "./ProductListItem";
-import 'vue3-carousel/dist/carousel.css';
-import {Carousel, Navigation} from 'vue3-carousel';
+import { defineProps, defineEmits } from 'vue'
+import ProductListItem from './ProductListItem'
+import 'vue3-carousel/dist/carousel.css'
+import { Carousel, Navigation } from 'vue3-carousel'
 
 defineProps({
   products: {
-    type: Object,
-    required: true
+    type: Array,
+    required: true,
   },
   addDisable: {
     type: Boolean,
-    required: true
+    required: true,
   },
   currency: {
     type: String,
-    required: false
+    required: false,
   },
   sellingPlan: {
     type: String,
-    required: false
-  }
+    required: false,
+  },
 })
 
 const emits = defineEmits(['add-product', 'remove-product'])
@@ -30,11 +30,11 @@ const settings = {
   snapAlign: 'center',
 }
 
-const addProduct = (product) => {
+const addProduct = product => {
   emits('add-product', product)
 }
 
-const removeProduct = (id) => {
+const removeProduct = id => {
   emits('remove-product', id)
 }
 
@@ -64,18 +64,19 @@ const breakpoints = {
 <template>
   <div id="bundle-list" class="b-product-list">
     <carousel :settings="settings" :breakpoints="breakpoints">
-      <ProductListItem class="b-product"
-                       v-for="product in products"
-                       :add-disable="addDisable"
-                       :product="product"
-                       :key="product.id"
-                       :currency="currency"
-                       :selling-plan="sellingPlan"
-                       @add-product="addProduct"
-                       @remove-product="removeProduct"
+      <ProductListItem
+        class="b-product"
+        v-for="product in products"
+        :add-disable="addDisable"
+        :product="product"
+        :key="product.id"
+        :currency="currency"
+        :selling-plan="sellingPlan"
+        @add-product="addProduct"
+        @remove-product="removeProduct"
       ></ProductListItem>
       <template #addons>
-        <navigation/>
+        <navigation />
       </template>
     </carousel>
   </div>
