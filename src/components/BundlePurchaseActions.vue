@@ -1,10 +1,15 @@
 <script setup>
 import { defineProps, ref } from 'vue'
 import BundlePurchaseToCart from './BundlePurchaseToCart'
-//import BundlePurchaseSubscription from './BundlePurchaseSubscription'
+import BundlePurchaseSubscription from './BundlePurchaseSubscription'
+
 defineProps({
-  purchaseIsDisabled: {
+  purchaseIsDisable: {
     type: Boolean,
+    required: true,
+  },
+  subscription: {
+    type: Object,
     required: true,
   },
   products: {
@@ -24,13 +29,24 @@ const displayMessage = () => {
     messageVisible.value = false
   }, 4000)
 }
-
 </script>
 <template>
+  {{ subscription }}
   <div v-show="messageVisible" class="cart-message">
     {{ $t('cart_message') }}
   </div>
-  <BundlePurchaseToCart :products="products" :cart-is-disable="purchaseIsDisabled" @cart-add="displayMessage" />
-<!--  <BundlePurchaseSubscription :products="products" :cart-is-disable="purchaseIsDisabled" :selling-plan="sellingPlan" />-->
+  <transition-group name='fade'>
+    <div v-if="subscription.active">
+      Active Subscription
+      <BundlePurchaseSubscription :products="products" :purchase-is-disable="purchaseIsDisable" />
+    </div>
+    <div v-else>
+      <BundlePurchaseToCart
+        :products="products"
+        :purchase-is-disable="purchaseIsDisable"
+        @cart-add="displayMessage"
+      />
+    </div>
+  </transition-group>
 </template>
 <style scoped></style>

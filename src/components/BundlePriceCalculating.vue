@@ -1,12 +1,13 @@
 <script setup>
 import { defineProps, computed } from 'vue'
+
 const props = defineProps({
   settings: {
     type: Object,
     required: true,
   },
   subscription: {
-    type: Boolean,
+    type: Object,
     required: true,
   },
   selecting: {
@@ -17,14 +18,10 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-  subscriptionDiscount : {
-    type: Number,
-    required: false
-  }
 })
 
 const discount = computed(()=> {
-  return props.subscription ? props.subscriptionDiscount : props.settings.bundleDiscount
+  return props.subscription.active ? props.subscription.discount : props.settings.bundleDiscount
 })
 
 const discountPrice = computed(() => {
@@ -51,7 +48,7 @@ const discountPrice = computed(() => {
         {{ discountPrice }}
         {{ props.settings.currency }}
       </div>
-      <div v-if="props.total" class="old-price">
+      <div v-if="total" class="old-price">
         {{ (props.total / 100).toFixed(2) }}
         {{ props.settings.currency }}
       </div>

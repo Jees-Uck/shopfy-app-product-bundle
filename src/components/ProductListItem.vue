@@ -34,9 +34,7 @@ const removeIsDisable = computed(() => {
 })
 
 const productIsAvailable = computed(() => {
-  return (
-    (props.sellingPlan === '' || props.product.sellingPlanIDs.includes(props.sellingPlan)) && props.product.available
-  )
+  return props.product.isInBundle && props.product.available
 })
 </script>
 <template>

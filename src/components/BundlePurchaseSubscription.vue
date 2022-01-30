@@ -1,7 +1,7 @@
 <script setup>
 import { defineProps } from 'vue'
 
-defineProps({
+const props = defineProps({
   products: {
     type: Array,
     required: true,
@@ -10,23 +10,19 @@ defineProps({
     type: Boolean,
     required: true,
   },
-  sellingPlan: {
-    type: String,
+  subscription: {
+    type: Object,
     required: true,
-  },
+  }
 })
 let checkoutLink = ''
 
 const createCheckoutLink = () => {
-  let productList = products.value.map(product => {
+  let productList = props.products.value.map(product => {
     return product.id + ':' + product.quantity
   })
-  if (!sellingPlan) {
-    checkoutLink = '/cart/' + productList + '?discount=Bundle_Discount_' + discount
+    checkoutLink = '/cart/' + productList
     //+ '&selling_plan=' + sellingPlan.value
-  } else {
-    checkoutLink = '/cart/' + productList + '?selling_plan=' + sellingPlan.value
-  }
 }
 
 const moveToCheckout = async () => {
@@ -35,8 +31,9 @@ const moveToCheckout = async () => {
 }
 </script>
 <template>
-  <button :disabled="purchaseIsDisabled" @click.prevent="moveToCheckout" class="buy-now" id="buy-now">
-    {{ $t('checkout_text') }}
+  <button :disabled="props.purchaseIsDisabled" @click.prevent="moveToCheckout" class="buy-now" id="buy-now">
+<!--    {{ $t('checkout_text') }} -->
+    Subscribe and save {{ props.subscription.discount }}%
   </button>
 </template>
 
