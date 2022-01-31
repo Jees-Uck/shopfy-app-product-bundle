@@ -2,55 +2,53 @@
 import { defineProps, defineEmits } from 'vue'
 import axios from 'axios'
 
-defineProps({
+const props = defineProps({
   products: {
-    type: Object,
+    type: Array,
     required: true,
   },
-  purchaseIsDisabled: {
+  purchaseIsDisable: {
     type: Boolean,
     required: true,
   },
+  discount: {
+    required: false,
+  },
 })
-defineEmits()
+const emits = defineEmits(['cart-add'])
+const cartAdd = message => {
+  emits('cart-add', message)
+}
 const addToCart = async () => {
   try {
-    let items = resultList.value.map(product => {
+    let items = props.products.map(product => {
       return {
-        id: product.id.value,
-        price: product.price.value,
-        quantity: product.quantity.value,
-        selling_plan: sellingPlan.value,
+        id: product.id,
+        price: product.price,
+        quantity: product.quantity,
       }
     })
     let url = '/cart/add.js'
-    console.log('Cart items: ', items)
+    console.log('Cart items: ', items, url)
     //let url =  this.host + 'cart/add.js'; // test API
-    await axios.post(url, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      items,
-    })
+    // await axios.post(url, {
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   items,
+    // })
     await updateCartCounter()
-    if (!sellingPlan.value) {
-      setDiscount()
-    }
-    displayMessage()
+    await setDiscount()
+    cartAdd('cart-add')
   } catch (err) {
     console.error('Add to cart error: ', err)
   }
-  copyProductsWithQuantity()
-  selecting.value = []
-  resultList.value = []
-  total.value = 0
 }
 const setDiscount = () => {
-  const discountCode = 'Bundle_Discount_' + discount
-  if (oneTimePurchaseDiscount) {
-    localStorage.setItem('discount', discountCode)
-  }
+  const discountCode = 'Bundle_Discount_' + props.discount
+  localStorage.setItem('discount', discountCode)
 }
+
 const updateCartCounter = async () => {
   const counter = document.getElementById('CartToggleItemCount')
   try {
@@ -66,7 +64,7 @@ const updateCartCounter = async () => {
 }
 </script>
 <template>
-  <button :disabled="purchaseIsDisabled" @click.prevent="addToCart" class="cart-add" id="add-bundle">
+  <button :disabled="purchaseIsDisable" @click.prevent="addToCart('cart-add')" class="cart-add" id="add-bundle">
     {{ $t('cart_text') }}
   </button>
 </template>

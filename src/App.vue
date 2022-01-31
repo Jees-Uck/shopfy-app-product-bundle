@@ -57,10 +57,10 @@ const getProducts = async () => {
 const selecting = ref([])
 const resultList = ref([])
 const sellingPlan = ref('')
-const total = ref(null)
+const total = ref(0)
 const loading = ref(true)
 const products = ref([])
-const message = ref("")
+const purchaseEvent = ref('')
 const messageIsVisible = ref(false)
 
 // Create product list from raw data
@@ -84,21 +84,6 @@ const copyProductsWithQuantity = () => {
       quantity: 0,
     }
   })
-}
-
-// globalEvent.on('cart-add', message => {
-//   checkProductsPlans()
-//   resetSelecting()
-//   copyProductsWithQuantity()
-//   showMessage(message)
-// })
-
-const createSubscription =  (event) => {
-  checkProductsPlans()
-  resetSelecting()
-  copyProductsWithQuantity()
-  showMessage()
-  console.log("Created", event)
 }
 
 const subscription = ref({
@@ -176,7 +161,7 @@ const showMessage = message => {
   messageIsVisible.value = true
   setTimeout(() => {
     messageIsVisible.value = false
-
+    purchaseEvent.value = ''
   }, 4000)
   console.log(message)
 }
@@ -188,6 +173,19 @@ onMounted(async () => {
   await checkProductsPlans()
   loading.value = false
 })
+
+const messageVisible = ref(true)
+
+const purchaseBundleAfterActions = async event => {
+  purchaseEvent.value = event
+  await resetSelecting()
+  await copyProductsWithQuantity()
+  selecting.value = []
+  resultList.value = []
+  total.value = 0
+  showMessage(event)
+  console.log('Created', event)
+}
 
 const addIsDisable = computed(() => {
   return selecting.value.length >= bundleSettings.value.maxItems
@@ -221,15 +219,24 @@ const purchaseIsDisable = computed(() => {
       @remove-product="removeProduct"
     ></ProductList>
     <BundleResultList :products="resultList" />
-    <div v-show="messageIsVisible" class="cart-message">
-      {{ message }}
-    </div>
+      <div class="messages" v-if="messageVisible">
+        <transition-group name="fade">
+        <div v-if="purchaseEvent === 'cart-add'" class="cart-message">
+          {{ $t('cart_message') }}
+        </div>
+        <div v-if="purchaseEvent === 'create-subscription'" class="cart-message">
+          Subscription message
+          {{ $t('subscription_message') }}
+        </div>
+        </transition-group>
+      </div>
     <BundlePurchaseActions
       :products="resultList"
       :subscription="subscription"
-      @purchase="resetSelecting"
       :purchaseIsDisable="purchaseIsDisable"
-      @create-subscription='createSubscription'
+      :discount="bundleSettings.bundleDiscount"
+      @create-subscription="purchaseBundleAfterActions"
+      @cart-add="purchaseBundleAfterActions"
     />
   </div>
   <div v-else>
@@ -239,4 +246,17 @@ const purchaseIsDisable = computed(() => {
   </div>
 </template>
 
-<style></style>
+<style>
+.messages {
+  min-height: 60px;
+}
+.fade-enter-active {
+  transition: all 0.2s ease 0.1s;
+}
+.fade-leave-active {
+  transition: opacity 0s;
+}
+.fade-enter-from {
+  opacity: 0;
+}
+</style>

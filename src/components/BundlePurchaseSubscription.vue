@@ -1,7 +1,7 @@
 <script setup>
-import {defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits } from 'vue'
 
-defineProps({
+const props = defineProps({
   products: {
     type: Array,
     required: true,
@@ -13,30 +13,34 @@ defineProps({
   subscription: {
     type: Object,
     required: true,
-  }
+  },
 })
-defineEmits(['create-subscription'])
-//const subscriptionMessage = "Subscription created"
 
+const subscriptionEvent = message => {
+  emits('create-subscription', message)
+}
 
-// let checkoutLink = ''
-//
-// const createCheckoutLink = () => {
-  // let productList = products.value.map(product => {
-  //   return product.id + ':' + product.quantity
-  // })
- //   checkoutLink = '/cart/' + productList
-    //+ '&selling_plan=' + sellingPlan.value
-//}
+const emits = defineEmits(['create-subscription'])
 
-// const moveToCheckout = async () => {
-//   await createCheckoutLink()
-//   window.location.href = checkoutLink.value
-// }
+let checkoutLink = ''
+
+const createCheckoutLink = () => {
+  let productList = props.products.map(product => {
+    return 'id=' + product.id + '&quantity=' + product.quantity + '&selling_plan=' + props.subscription.id
+  })
+  checkoutLink = '/cart/add?' + productList + '&return_to=/checkout'
+}
+
+const moveToCheckout = async () => {
+  await createCheckoutLink()
+  subscriptionEvent('create-subscription')
+  console.log(checkoutLink)
+  // window.location.href = checkoutLink
+}
 </script>
 <template>
-  <button :disabled="purchaseIsDisable" @click.prevent="$emit('create-subscription')" class="buy-now" id="buy-now">
-<!--    {{ $t('checkout_text') }} -->
+  <button :disabled="purchaseIsDisable" @click.prevent="moveToCheckout" class="buy-now" id="buy-now">
+    <!--    {{ $t('checkout_text') }} -->
     Subscribe and save {{ subscription.discount }}%
   </button>
 </template>

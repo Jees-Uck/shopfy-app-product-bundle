@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue'
+import { defineProps, defineEmits } from 'vue'
 import BundlePurchaseToCart from './BundlePurchaseToCart'
 import BundlePurchaseSubscription from './BundlePurchaseSubscription'
 
@@ -15,31 +15,19 @@ defineProps({
   products: {
     type: Array,
     required: true,
-  },
-  sellingPlan: {
-    type: String,
-    required: true,
-  },
+  }
 })
-const emits = defineEmits(['create-subscription'])
+const emits = defineEmits(['cart-add', 'create-subscription'])
 
-const createSubscription = () => {
-  emits('create-subscription')
+const createSubscription = (message) => {
+  emits('create-subscription', message)
+}
+const cartAdd = (message) => {
+  emits('cart-add', message)
 }
 
-const messageVisible = ref(false)
-
-const displayMessage = () => {
-  messageVisible.value = true
-  setTimeout(() => {
-    messageVisible.value = false
-  }, 4000)
-}
 </script>
 <template>
-  <div v-show="messageVisible" class="cart-message">
-    {{ $t('cart_message') }}
-  </div>
   <div v-if="subscription.active">
     <BundlePurchaseSubscription
       :products="products"
@@ -49,7 +37,7 @@ const displayMessage = () => {
     />
   </div>
   <div v-else>
-    <BundlePurchaseToCart :products="products" :purchase-is-disable="purchaseIsDisable" @cart-add="displayMessage" />
+    <BundlePurchaseToCart :products="products" :purchase-is-disable="purchaseIsDisable" @cart-add="cartAdd" />
   </div>
 </template>
 <style scoped></style>
