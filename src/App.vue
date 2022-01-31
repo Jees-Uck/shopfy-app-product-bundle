@@ -60,6 +60,8 @@ const sellingPlan = ref('')
 const total = ref(null)
 const loading = ref(true)
 const products = ref([])
+const message = ref("")
+const messageIsVisible = ref(false)
 
 // Create product list from raw data
 const copyProductsWithQuantity = () => {
@@ -82,6 +84,21 @@ const copyProductsWithQuantity = () => {
       quantity: 0,
     }
   })
+}
+
+// globalEvent.on('cart-add', message => {
+//   checkProductsPlans()
+//   resetSelecting()
+//   copyProductsWithQuantity()
+//   showMessage(message)
+// })
+
+const createSubscription =  (event) => {
+  checkProductsPlans()
+  resetSelecting()
+  copyProductsWithQuantity()
+  showMessage()
+  console.log("Created", event)
 }
 
 const subscription = ref({
@@ -133,10 +150,7 @@ const setPurchase = plan => {
     subscription.value.name = plan.name
     subscription.value.discount = plan.price_adjustments[0].value
   } else {
-    subscription.value.active = false
-    subscription.value.id = null
-    subscription.value.name = 'onetime'
-    subscription.value.discount = bundleSettings.value.bundleDiscount
+    subscriptionEmptyState()
   }
   checkProductsPlans()
   resetSelecting()
@@ -151,6 +165,21 @@ const resetSelecting = () => {
   total.value = 0
 }
 
+const subscriptionEmptyState = () => {
+  subscription.value.active = false
+  subscription.value.id = null
+  subscription.value.name = 'onetime'
+  subscription.value.discount = bundleSettings.value.bundleDiscount
+}
+
+const showMessage = message => {
+  messageIsVisible.value = true
+  setTimeout(() => {
+    messageIsVisible.value = false
+
+  }, 4000)
+  console.log(message)
+}
 onMounted(async () => {
   await createHandleList()
   await getSellingPlans()
@@ -172,7 +201,6 @@ const purchaseIsDisable = computed(() => {
   <input v-model="$i18n.locale" id="vue-lang" class="vue-lang" />
   <Preloader v-if="loading"></Preloader>
   <div v-else-if="products.length" class="bundle-container">
-    {{ subscription }}
     <BundlePurchaseOptions
       :plans="sellingPlans"
       :subscription="subscription"
@@ -193,7 +221,16 @@ const purchaseIsDisable = computed(() => {
       @remove-product="removeProduct"
     ></ProductList>
     <BundleResultList :products="resultList" />
-    <BundlePurchaseActions :products="resultList" :subscription="subscription" @purchase="resetSelecting" :purchaseIsDisable='purchaseIsDisable'/>
+    <div v-show="messageIsVisible" class="cart-message">
+      {{ message }}
+    </div>
+    <BundlePurchaseActions
+      :products="resultList"
+      :subscription="subscription"
+      @purchase="resetSelecting"
+      :purchaseIsDisable="purchaseIsDisable"
+      @create-subscription='createSubscription'
+    />
   </div>
   <div v-else>
     <p class="empty">

@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref } from 'vue'
+import { defineProps, defineEmits, ref } from 'vue'
 import BundlePurchaseToCart from './BundlePurchaseToCart'
 import BundlePurchaseSubscription from './BundlePurchaseSubscription'
 
@@ -21,6 +21,12 @@ defineProps({
     required: true,
   },
 })
+const emits = defineEmits(['create-subscription'])
+
+const createSubscription = () => {
+  emits('create-subscription')
+}
+
 const messageVisible = ref(false)
 
 const displayMessage = () => {
@@ -31,22 +37,19 @@ const displayMessage = () => {
 }
 </script>
 <template>
-  {{ subscription }}
   <div v-show="messageVisible" class="cart-message">
     {{ $t('cart_message') }}
   </div>
-  <transition-group name='fade'>
-    <div v-if="subscription.active">
-      Active Subscription
-      <BundlePurchaseSubscription :products="products" :purchase-is-disable="purchaseIsDisable" />
-    </div>
-    <div v-else>
-      <BundlePurchaseToCart
-        :products="products"
-        :purchase-is-disable="purchaseIsDisable"
-        @cart-add="displayMessage"
-      />
-    </div>
-  </transition-group>
+  <div v-if="subscription.active">
+    <BundlePurchaseSubscription
+      :products="products"
+      :purchase-is-disable="purchaseIsDisable"
+      :subscription="subscription"
+      @create-subscription="createSubscription"
+    />
+  </div>
+  <div v-else>
+    <BundlePurchaseToCart :products="products" :purchase-is-disable="purchaseIsDisable" @cart-add="displayMessage" />
+  </div>
 </template>
 <style scoped></style>

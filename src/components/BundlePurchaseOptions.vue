@@ -19,11 +19,12 @@ defineEmits(['update-subscription'])
 //   emits('update-subscription', value)
 // }
 const onetime = {
-  id: null
+  id: null,
 }
 </script>
 
 <template>
+  {{ subscription }}
   <div class="b-purchase-options">
     <div class="b-purchase__option">
       <ul>
@@ -33,11 +34,24 @@ const onetime = {
       </ul>
       <form>
         <label for="onetime">
-          <input type="radio" name="purchase" value="" id="onetime" @change="$emit('update-subscription', onetime)" checked /> One Time
-          Purchase
+          <input
+            type="radio"
+            name="purchase"
+            value=""
+            id="onetime"
+            @change="$emit('update-subscription', onetime)"
+            checked="checked"
+          />
+          One Time Purchase
         </label>
         <label v-for="plan in plans" :key="plan.id" :for="plan.id">
-          <input type="radio" @change="$emit('update-subscription', plan)" :id="plan.id" name="purchase" :value="plan.id" />
+          <input
+            type="radio"
+            @change="$emit('update-subscription', plan)"
+            :id="plan.id"
+            name="purchase"
+            :value="plan.id"
+          />
           {{ plan.name }}
         </label>
       </form>

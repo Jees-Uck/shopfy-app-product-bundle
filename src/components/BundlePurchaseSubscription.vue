@@ -1,12 +1,12 @@
 <script setup>
-import { defineProps } from 'vue'
+import {defineProps, defineEmits } from 'vue'
 
-const props = defineProps({
+defineProps({
   products: {
     type: Array,
     required: true,
   },
-  purchaseIsDisabled: {
+  purchaseIsDisable: {
     type: Boolean,
     required: true,
   },
@@ -15,25 +15,29 @@ const props = defineProps({
     required: true,
   }
 })
-let checkoutLink = ''
+defineEmits(['create-subscription'])
+//const subscriptionMessage = "Subscription created"
 
-const createCheckoutLink = () => {
-  let productList = props.products.value.map(product => {
-    return product.id + ':' + product.quantity
-  })
-    checkoutLink = '/cart/' + productList
+
+// let checkoutLink = ''
+//
+// const createCheckoutLink = () => {
+  // let productList = products.value.map(product => {
+  //   return product.id + ':' + product.quantity
+  // })
+ //   checkoutLink = '/cart/' + productList
     //+ '&selling_plan=' + sellingPlan.value
-}
+//}
 
-const moveToCheckout = async () => {
-  await createCheckoutLink()
-  window.location.href = checkoutLink.value
-}
+// const moveToCheckout = async () => {
+//   await createCheckoutLink()
+//   window.location.href = checkoutLink.value
+// }
 </script>
 <template>
-  <button :disabled="props.purchaseIsDisabled" @click.prevent="moveToCheckout" class="buy-now" id="buy-now">
+  <button :disabled="purchaseIsDisable" @click.prevent="$emit('create-subscription')" class="buy-now" id="buy-now">
 <!--    {{ $t('checkout_text') }} -->
-    Subscribe and save {{ props.subscription.discount }}%
+    Subscribe and save {{ subscription.discount }}%
   </button>
 </template>
 
