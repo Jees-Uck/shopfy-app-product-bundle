@@ -5,7 +5,12 @@
   "selected_text": "Sélectionné",
   "selected_products": "Produits sélectionnés:",
   "cart_text": "Ajouter Au Panier",
+  "buy_now": "Acheter maintenant",
+  "subscribe_now": "S'abonner maintenant",
   "cart_message": "Votre ensemble planté a été ajouté au panier. La remise sera déduite à la caisse.",
   "checkout_text": "Acheter maintenant",
-  "empty_text": "Il n'y a pas de produits disponibles dans cet ensemble. \nSélectionnez un autre ensemble s'il vous plaît"
+  "empty_text": "Il n'y a pas de produits disponibles dans cet ensemble. \nSélectionnez un autre ensemble s'il vous plaît",
+  "subscription_title": "Abonnez-vous, recevez une nouvelle livraison toutes les 3 semaines et dépensez moins",
+  "subscription_message": "Veuillez patienter une minute, votre abonnement est en cours...",
+  "one_time_purchase": "Achat unique"
 }

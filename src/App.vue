@@ -219,17 +219,16 @@ const purchaseIsDisable = computed(() => {
       @remove-product="removeProduct"
     ></ProductList>
     <BundleResultList :products="resultList" />
-      <div class="messages" v-if="messageVisible">
-        <transition-group name="fade">
+    <div class="messages" v-if="messageVisible">
+      <transition-group name="fade">
         <div v-if="purchaseEvent === 'cart-add'" class="cart-message">
           {{ $t('cart_message') }}
         </div>
         <div v-if="purchaseEvent === 'create-subscription'" class="cart-message">
-          Subscription message
           {{ $t('subscription_message') }}
         </div>
-        </transition-group>
-      </div>
+      </transition-group>
+    </div>
     <BundlePurchaseActions
       :products="resultList"
       :subscription="subscription"

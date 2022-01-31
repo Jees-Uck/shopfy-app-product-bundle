@@ -5,7 +5,12 @@
   "selected_text": "Ausgewählt",
   "selected_products": "Ausgewählte Produkte:",
   "cart_text": "Zum Einkaufswagen hinzufügen",
+  "buy_now": "Jetzt kaufen",
+  "subscribe_now": "Jetzt abonnieren",
   "cart_message": "Dein planted.set wurde zum Warenkorb hinzugefügt. Der Rabatt wird im Checkout abgezogen.",
   "checkout_text": "Jetzt kaufen",
-  "empty_text": "Es sind keine Produkte in diesem Set vorhanden.\nWählen Sie ein anderes Set bitte"
+  "empty_text": "Es sind keine Produkte in diesem Set vorhanden.\nWählen Sie ein anderes Set bitte",
+  "subscription_title": "Abonnieren, alle 3 Wochen liefern lassen und sparen.",
+  "subscription_message": "Bitte warte einen Moment, Dein Abonnement ist in Bearbeitung...",
+  "one_time_purchase": "Einmaliger Kauf"
 }

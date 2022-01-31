@@ -28,16 +28,18 @@ const cartAdd = (message) => {
 
 </script>
 <template>
-  <div v-if="subscription.active">
-    <BundlePurchaseSubscription
-      :products="products"
-      :purchase-is-disable="purchaseIsDisable"
-      :subscription="subscription"
-      @create-subscription="createSubscription"
-    />
-  </div>
-  <div v-else>
-    <BundlePurchaseToCart :products="products" :purchase-is-disable="purchaseIsDisable" @cart-add="cartAdd" />
-  </div>
+  <transition-group name='fade'>
+    <div v-if="subscription.active">
+      <BundlePurchaseSubscription
+        :products="products"
+        :purchase-is-disable="purchaseIsDisable"
+        :subscription="subscription"
+        @create-subscription="createSubscription"
+      />
+    </div>
+    <div v-else>
+      <BundlePurchaseToCart :products="products" :purchase-is-disable="purchaseIsDisable" @cart-add="cartAdd" />
+    </div>
+  </transition-group>
 </template>
 <style scoped></style>

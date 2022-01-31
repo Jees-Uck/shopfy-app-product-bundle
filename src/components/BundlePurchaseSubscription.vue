@@ -34,14 +34,13 @@ const createCheckoutLink = () => {
 const moveToCheckout = async () => {
   await createCheckoutLink()
   subscriptionEvent('create-subscription')
-  console.log(checkoutLink)
-  // window.location.href = checkoutLink
+  //console.log(checkoutLink)
+  window.location.href = checkoutLink
 }
 </script>
 <template>
   <button :disabled="purchaseIsDisable" @click.prevent="moveToCheckout" class="buy-now" id="buy-now">
-    <!--    {{ $t('checkout_text') }} -->
-    Subscribe and save {{ subscription.discount }}%
+    {{ $t('subscribe_now') }}
   </button>
 </template>
 

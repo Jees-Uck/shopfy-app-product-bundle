@@ -25,14 +25,7 @@ const onetime = {
 
 <template>
   {{ subscription }}
-  <div class="b-purchase-options">
-    <div class="b-purchase__option">
-      <ul>
-        <li v-for="plan in plans" :key="plan.id">
-          ID: {{ plan.id }} Name: {{ plan.name }} Discount: {{ plan.price_adjustments[0].value }}
-        </li>
-      </ul>
-      <form>
+      <form class='b-purchase-options'>
         <label for="onetime">
           <input
             type="radio"
@@ -42,7 +35,7 @@ const onetime = {
             @change="$emit('update-subscription', onetime)"
             checked="checked"
           />
-          One Time Purchase
+          {{ $t('one_time_purchase') }}
         </label>
         <label v-for="plan in plans" :key="plan.id" :for="plan.id">
           <input
@@ -52,12 +45,15 @@ const onetime = {
             name="purchase"
             :value="plan.id"
           />
+<!--          {{ $t('subscription_title') }}-->
           {{ plan.name }}
         </label>
       </form>
-    </div>
-    <div class="b-purchase__option"></div>
-  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+ .b-purchase-options {
+   display: flex;
+   flex-direction: column;
+ }
+</style>

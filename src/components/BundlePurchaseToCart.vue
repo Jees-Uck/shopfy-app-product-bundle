@@ -64,8 +64,8 @@ const updateCartCounter = async () => {
 }
 </script>
 <template>
-  <button :disabled="purchaseIsDisable" @click.prevent="addToCart('cart-add')" class="cart-add" id="add-bundle">
-    {{ $t('cart_text') }}
+  <button :disabled="purchaseIsDisable" @click.prevent="addToCart('cart-add')" class="buy-now" id="add-bundle">
+    {{ $t('buy_now') }}
   </button>
 </template>
 <style scoped></style>
