@@ -15,6 +15,9 @@ defineProps({
   products: {
     type: Array,
     required: true,
+  },
+  discount: {
+    type: Number,
   }
 })
 const emits = defineEmits(['cart-add', 'create-subscription'])
@@ -38,7 +41,7 @@ const cartAdd = (message) => {
       />
     </div>
     <div v-else>
-      <BundlePurchaseToCart :products="products" :purchase-is-disable="purchaseIsDisable" @cart-add="cartAdd" />
+      <BundlePurchaseToCart :products="products" :purchase-is-disable="purchaseIsDisable" @cart-add="cartAdd" :discount='discount'/>
     </div>
   </transition-group>
 </template>

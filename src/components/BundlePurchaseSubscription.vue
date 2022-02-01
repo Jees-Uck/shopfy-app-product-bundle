@@ -1,4 +1,5 @@
 <script setup>
+import axios from 'axios'
 import { defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
@@ -22,20 +23,46 @@ const subscriptionEvent = message => {
 
 const emits = defineEmits(['create-subscription'])
 
-let checkoutLink = ''
-
-const createCheckoutLink = () => {
-  let productList = props.products.map(product => {
-    return 'id=' + product.id + '&quantity=' + product.quantity + '&selling_plan=' + props.subscription.id
-  })
-  checkoutLink = '/cart/add?' + productList + '&return_to=/checkout'
+const createSubscription = async () => {
+  try {
+    let items = props.products.map(product => {
+      let index = product.sellingPlanIDs.indexOf(props.subscription.id)
+      let price = product.priceAllocations[index].price
+      return {
+        id: product.id,
+        price: price,
+        quantity: product.quantity,
+        selling_plan: props.subscription.id,
+      }
+    })
+    let url = '/cart/add.js'
+    console.log('Cart items: ', items, url)
+    //let url =  this.host + 'cart/add.js'; // test API
+    await axios.post(url, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      items,
+    })
+  } catch (err) {
+    console.error('Add to cart error: ', err)
+  }
 }
 
+// let checkoutLink = ''
+//
+// const createCheckoutLink = () => {
+//   let productList = props.products.map(product => {
+//     return 'id=' + product.id + '&quantity=' + product.quantity + '&selling_plan=' + props.subscription.id
+//   })
+//   checkoutLink = '/cart/add?' + productList + '&return_to=/checkout'
+// }
+
 const moveToCheckout = async () => {
-  await createCheckoutLink()
+  await createSubscription()
   subscriptionEvent('create-subscription')
-  //console.log(checkoutLink)
-  window.location.href = checkoutLink
+  console.log()
+  //window.location.href = '/checkout'
 }
 </script>
 <template>

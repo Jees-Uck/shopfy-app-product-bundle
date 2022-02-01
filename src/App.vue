@@ -16,7 +16,6 @@ const bundleSettings = ref({
   bundleDiscount: parseInt(document.getElementById('discount-value').innerText),
   maxItems: document.getElementById('max-items').innerText,
   currency: document.getElementById('currency').innerText,
-  subscriptionDiscount: '',
 })
 
 const createHandleList = () => {
@@ -25,14 +24,14 @@ const createHandleList = () => {
     handles.push(handleItems[i].innerText)
   }
 }
-const host = 'https://test.web-space.com.ua/'
+//const host = 'https://test.web-space.com.ua/'
 
 const sellingPlans = ref({})
 
 const getSellingPlans = async () => {
   try {
-    const response = await axios.get(host + 'set')
-    //const response = await axios.get(location.href + '.js') //in Shopify
+    //const response = await axios.get(host + 'set')
+    const response = await axios.get(location.href + '.js') //in Shopify
     sellingPlans.value = response.data.selling_plan_groups[0].selling_plans
   } catch (err) {
     console.error('Selling plans fetched with error: ', err)
@@ -42,8 +41,8 @@ const getSellingPlans = async () => {
 const getProducts = async () => {
   for (let i = 0; i < handles.length; i++) {
     try {
-      const response = await axios.get(host + handles[i]) // test
-      //const response = await axios.get(handles[i] + '.js') //in Shopify
+      //const response = await axios.get(host + handles[i]) // test
+      const response = await axios.get(handles[i] + '.js') //in Shopify
       let data = response.data
       rawProductsData.push(data)
     } catch (err) {
@@ -64,13 +63,17 @@ const purchaseEvent = ref('')
 const messageIsVisible = ref(false)
 
 // Create product list from raw data
-const copyProductsWithQuantity = () => {
+const createProductList = () => {
   products.value = rawProductsData.map(product => {
     let sellingPlans = []
-
+    let priceAllocations = []
     product.variants[0].selling_plan_allocations.forEach(item => {
+      let priceAllocation = {
+        id: item.selling_plan_id,
+        price: item.price,
+      }
       sellingPlans.push(item.selling_plan_id)
-      sellingPlans.sort()
+      priceAllocations.push(priceAllocation)
     })
 
     return {
@@ -79,6 +82,7 @@ const copyProductsWithQuantity = () => {
       price: product.variants[0].price,
       featured_image: product.featured_image,
       available: product.variants[0].available,
+      priceAllocations: priceAllocations,
       sellingPlanIDs: sellingPlans,
       isInBundle: true,
       quantity: 0,
@@ -165,26 +169,26 @@ const showMessage = message => {
   }, 4000)
   console.log(message)
 }
+
 onMounted(async () => {
   await createHandleList()
   await getSellingPlans()
   await getProducts()
-  await copyProductsWithQuantity()
+  await createProductList()
   await checkProductsPlans()
   loading.value = false
 })
 
-const messageVisible = ref(true)
+const messageVisible = ref(false)
 
 const purchaseBundleAfterActions = async event => {
   purchaseEvent.value = event
   await resetSelecting()
-  await copyProductsWithQuantity()
+  await createProductList()
   selecting.value = []
   resultList.value = []
   total.value = 0
   showMessage(event)
-  console.log('Created', event)
 }
 
 const addIsDisable = computed(() => {
@@ -193,6 +197,10 @@ const addIsDisable = computed(() => {
 
 const purchaseIsDisable = computed(() => {
   return selecting.value.length < bundleSettings.value.maxItems
+})
+
+const messageStyle = computed(() => {
+  return messageVisible ? 'visible' : 'hidden'
 })
 </script>
 <template>
@@ -219,7 +227,7 @@ const purchaseIsDisable = computed(() => {
       @remove-product="removeProduct"
     ></ProductList>
     <BundleResultList :products="resultList" />
-    <div class="messages" v-if="messageVisible">
+    <div class="messages" :class='messageStyle'>
       <transition-group name="fade">
         <div v-if="purchaseEvent === 'cart-add'" class="cart-message">
           {{ $t('cart_message') }}
@@ -246,8 +254,12 @@ const purchaseIsDisable = computed(() => {
 </template>
 
 <style>
-.messages {
-  min-height: 60px;
+.messages.visible {
+  height: 60px;
+}
+.messages.hidden {
+  height: 0;
+  transition: height 0.2s;
 }
 .fade-enter-active {
   transition: all 0.2s ease 0.1s;

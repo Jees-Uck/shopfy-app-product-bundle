@@ -15,6 +15,7 @@ const props = defineProps({
     required: false,
   },
 })
+
 const emits = defineEmits(['cart-add'])
 const cartAdd = message => {
   emits('cart-add', message)
@@ -31,12 +32,12 @@ const addToCart = async () => {
     let url = '/cart/add.js'
     console.log('Cart items: ', items, url)
     //let url =  this.host + 'cart/add.js'; // test API
-    // await axios.post(url, {
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   items,
-    // })
+    await axios.post(url, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      items,
+    })
     await updateCartCounter()
     await setDiscount()
     cartAdd('cart-add')
@@ -45,8 +46,10 @@ const addToCart = async () => {
   }
 }
 const setDiscount = () => {
-  const discountCode = 'Bundle_Discount_' + props.discount
-  localStorage.setItem('discount', discountCode)
+  if (props.discount) {
+    const discountCode = 'Bundle_Discount_' + props.discount
+    localStorage.setItem('discount', discountCode)
+  }
 }
 
 const updateCartCounter = async () => {
