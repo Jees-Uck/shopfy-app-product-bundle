@@ -27,6 +27,7 @@ const addToCart = async () => {
         id: product.id,
         price: product.price,
         quantity: product.quantity,
+        properties: { 'Discount': 'planted.set' }
       }
     })
     let url = '/cart/add.js'
@@ -38,7 +39,6 @@ const addToCart = async () => {
       },
       items,
     })
-    await updateCartCounter()
     await setDiscount()
     cartAdd('cart-add')
   } catch (err) {
@@ -52,19 +52,6 @@ const setDiscount = () => {
   }
 }
 
-const updateCartCounter = async () => {
-  const counter = document.getElementById('CartToggleItemCount')
-  try {
-    const cartData = await axios.get('/cart.js')
-    const cart = cartData.data
-    if (cart.item_count) {
-      counter.innerHTML = cart.item_count
-      counter.classList.remove('hidden')
-    }
-  } catch (err) {
-    console.error('Update counter error ', err)
-  }
-}
 </script>
 <template>
   <button :disabled="purchaseIsDisable" @click.prevent="addToCart('cart-add')" class="buy-now" id="add-bundle">

@@ -66,7 +66,7 @@ const moveToCheckout = async () => {
 }
 </script>
 <template>
-  <button :disabled="purchaseIsDisable" @click.prevent="moveToCheckout" class="buy-now" id="buy-now">
+  <button :disabled="purchaseIsDisable" @click.prevent="moveToCheckout" class="cart-add" id="buy-now">
     {{ $t('subscribe_now') }}
   </button>
 </template>

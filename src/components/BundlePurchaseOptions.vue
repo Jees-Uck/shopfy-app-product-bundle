@@ -24,7 +24,6 @@ const onetime = {
 </script>
 
 <template>
-  {{ subscription }}
   <form class="b-purchase-options">
     <label for="onetime" class='b-purchase__label'>
       <input

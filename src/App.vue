@@ -119,6 +119,7 @@ const addProduct = product => {
     resultList.value.push(product)
   }
   total.value += product.price
+  messageVisible.value = false
 }
 
 const removeProduct = id => {
@@ -161,13 +162,26 @@ const subscriptionEmptyState = () => {
   subscription.value.discount = bundleSettings.value.bundleDiscount
 }
 
-const showMessage = message => {
+const showMessage = () => {
   messageIsVisible.value = true
   setTimeout(() => {
     messageIsVisible.value = false
     purchaseEvent.value = ''
   }, 4000)
-  console.log(message)
+}
+
+const updateCartCounter = async () => {
+  const counter = document.getElementById('CartToggleItemCount')
+  try {
+    const cartData = await axios.get('/cart.js')
+    const cart = cartData.data
+    if (cart.item_count) {
+      counter.innerHTML = cart.item_count
+      counter.classList.remove('hidden')
+    }
+  } catch (err) {
+    console.error('Update counter error ', err)
+  }
 }
 
 onMounted(async () => {
@@ -185,6 +199,7 @@ const purchaseBundleAfterActions = async event => {
   purchaseEvent.value = event
   await resetSelecting()
   await createProductList()
+  await updateCartCounter()
   selecting.value = []
   resultList.value = []
   total.value = 0
@@ -200,7 +215,7 @@ const purchaseIsDisable = computed(() => {
 })
 
 const messageStyle = computed(() => {
-  return messageVisible ? 'visible' : 'hidden'
+  return messageVisible.value ? 'expanded' : 'collapsed'
 })
 </script>
 <template>
@@ -254,10 +269,14 @@ const messageStyle = computed(() => {
 </template>
 
 <style>
-.messages.visible {
+.messages {
+  position: relative;
+  display: block;
+}
+.messages.expanded {
   height: 60px;
 }
-.messages.hidden {
+.messages.collapsed {
   height: 0;
   transition: height 0.2s;
 }
