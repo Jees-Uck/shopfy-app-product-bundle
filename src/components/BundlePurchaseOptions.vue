@@ -1,7 +1,8 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue'
+import BundlePurchaseOptionsInput from './BundlePurchaseOptionsInput'
 
-defineProps({
+const props = defineProps({
   plans: {
     type: Array,
     required: true,
@@ -18,6 +19,7 @@ defineEmits(['update-subscription'])
 // const setPurchase = value => {
 //   emits('update-subscription', value)
 // }
+console.log(props.plans)
 const onetime = {
   id: null,
 }
@@ -25,7 +27,7 @@ const onetime = {
 
 <template>
   <form class="b-purchase-options">
-    <label for="onetime" class='b-purchase__label'>
+    <label for="onetime" class="b-purchase__label">
       <input
         type="radio"
         name="purchase"
@@ -37,18 +39,12 @@ const onetime = {
       />
       {{ $t('one_time_purchase') }}
     </label>
-    <label v-for="plan in plans" :key="plan.id" :for="plan.id" class='b-purchase__label'>
-      <input
-        type="radio"
-        @change="$emit('update-subscription', plan)"
-        :id="plan.id"
-        name="purchase"
-        :value="plan.id"
-        class="b-purchase__input"
-      />
-      <!--          {{ $t('subscription_title') }}-->
-      {{ plan.name }}
-    </label>
+    <BundlePurchaseOptionsInput
+      v-for="plan in plans"
+      :plan="plan"
+      :key="plan.id"
+      @change="$emit('update-subscription', plan)"
+    />
   </form>
 </template>
 

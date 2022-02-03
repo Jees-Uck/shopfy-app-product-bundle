@@ -24,14 +24,14 @@ const createHandleList = () => {
     handles.push(handleItems[i].innerText)
   }
 }
-//const host = 'https://test.web-space.com.ua/'
+const host = 'https://test.web-space.com.ua/'
 
 const sellingPlans = ref({})
 
 const getSellingPlans = async () => {
   try {
-    //const response = await axios.get(host + 'set')
-    const response = await axios.get(location.href + '.js') //in Shopify
+    const response = await axios.get(host + 'set')
+    //const response = await axios.get(location.href + '.js') //in Shopify
     sellingPlans.value = response.data.selling_plan_groups[0].selling_plans
   } catch (err) {
     console.error('Selling plans fetched with error: ', err)
@@ -41,8 +41,8 @@ const getSellingPlans = async () => {
 const getProducts = async () => {
   for (let i = 0; i < handles.length; i++) {
     try {
-      //const response = await axios.get(host + handles[i]) // test
-      const response = await axios.get(handles[i] + '.js') //in Shopify
+      const response = await axios.get(host + handles[i]) // test
+      //const response = await axios.get(handles[i] + '.js') //in Shopify
       let data = response.data
       rawProductsData.push(data)
     } catch (err) {
@@ -223,6 +223,7 @@ const messageStyle = computed(() => {
   <Preloader v-if="loading"></Preloader>
   <div v-else-if="products.length" class="bundle-container">
     <BundlePurchaseOptions
+      v-if='subscription'
       :plans="sellingPlans"
       :subscription="subscription"
       @update-subscription="setPurchase($event)"
