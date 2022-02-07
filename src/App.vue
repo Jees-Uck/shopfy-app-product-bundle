@@ -24,14 +24,14 @@ const createHandleList = () => {
     handles.push(handleItems[i].innerText)
   }
 }
-const host = 'https://test.web-space.com.ua/'
+//const host = 'https://test.web-space.com.ua/'
 
 const sellingPlans = ref({})
 
 const getSellingPlans = async () => {
   try {
-    const response = await axios.get(host + 'set')
-    //const response = await axios.get(location.href + '.js') //in Shopify
+    //const response = await axios.get(host + 'set')
+    const response = await axios.get(location.href + '.js') //in Shopify
     sellingPlans.value = response.data.selling_plan_groups[0].selling_plans
   } catch (err) {
     console.error('Selling plans fetched with error: ', err)
@@ -41,8 +41,8 @@ const getSellingPlans = async () => {
 const getProducts = async () => {
   for (let i = 0; i < handles.length; i++) {
     try {
-      const response = await axios.get(host + handles[i]) // test
-      //const response = await axios.get(handles[i] + '.js') //in Shopify
+      //const response = await axios.get(host + handles[i]) // test
+      const response = await axios.get(handles[i] + '.js') //in Shopify
       let data = response.data
       rawProductsData.push(data)
     } catch (err) {
@@ -89,6 +89,10 @@ const createProductList = () => {
     }
   })
 }
+
+const updatedProducts = computed(() => {
+  return [...products.value].filter(product  => product.isInBundle )
+})
 
 const subscription = ref({
   active: false,
@@ -217,13 +221,15 @@ const purchaseIsDisable = computed(() => {
 const messageStyle = computed(() => {
   return messageVisible.value ? 'expanded' : 'collapsed'
 })
+
 </script>
 <template>
   <input v-model="$i18n.locale" id="vue-lang" class="vue-lang" />
   <Preloader v-if="loading"></Preloader>
   <div v-else-if="products.length" class="bundle-container">
     <BundlePurchaseOptions
-      v-if='subscription'
+      v-if="subscription"
+      :settings="bundleSettings"
       :plans="sellingPlans"
       :subscription="subscription"
       @update-subscription="setPurchase($event)"
@@ -235,7 +241,8 @@ const messageStyle = computed(() => {
       :selecting="selecting"
     />
     <ProductList
-      :products="products"
+      :subscription="subscription.active"
+      :products="updatedProducts"
       :currency="bundleSettings.currency"
       :add-disable="addIsDisable"
       :selling-plan="sellingPlan"
@@ -243,7 +250,7 @@ const messageStyle = computed(() => {
       @remove-product="removeProduct"
     ></ProductList>
     <BundleResultList :products="resultList" />
-    <div class="messages" :class='messageStyle'>
+    <div class="messages" :class="messageStyle">
       <transition-group name="fade">
         <div v-if="purchaseEvent === 'cart-add'" class="cart-message">
           {{ $t('cart_message') }}

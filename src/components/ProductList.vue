@@ -3,7 +3,6 @@ import { defineProps, defineEmits } from 'vue'
 import ProductListItem from './ProductListItem'
 import 'vue3-carousel/dist/carousel.css'
 import { Carousel, Navigation } from 'vue3-carousel'
-
 defineProps({
   products: {
     type: Array,
@@ -21,8 +20,11 @@ defineProps({
     type: String,
     required: false,
   },
+  subscription: {
+    type: Boolean,
+    required: true
+  }
 })
-
 const emits = defineEmits(['add-product', 'remove-product'])
 
 const settings = {

@@ -11,6 +11,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  settings: {
+    type: Object,
+    required: true
+  }
   //modelValue: String
 })
 defineEmits(['update-subscription'])
@@ -19,7 +23,6 @@ defineEmits(['update-subscription'])
 // const setPurchase = value => {
 //   emits('update-subscription', value)
 // }
-console.log(props.plans)
 const onetime = {
   id: null,
 }
@@ -37,7 +40,7 @@ const onetime = {
         checked="checked"
         class="b-purchase__input"
       />
-      {{ $t('one_time_purchase') }}
+      {{ $t('one_time_purchase') }},  {{ $t('save') }} {{ props.settings.bundleDiscount }}%
     </label>
     <BundlePurchaseOptionsInput
       v-for="plan in plans"
@@ -48,7 +51,7 @@ const onetime = {
   </form>
 </template>
 
-<style scoped>
+<style>
 .b-purchase-options {
   display: flex;
   flex-direction: column;

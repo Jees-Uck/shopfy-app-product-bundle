@@ -20,7 +20,7 @@ const props = defineProps({
   },
 })
 
-const discount = computed(()=> {
+const discount = computed(() => {
   return props.subscription.active ? props.subscription.discount : props.settings.bundleDiscount
 })
 

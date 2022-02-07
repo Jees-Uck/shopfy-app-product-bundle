@@ -35,8 +35,10 @@ const createSubscription = async () => {
         selling_plan: props.subscription.id,
       }
     })
+    await localStorage.setItem('selling_plan', props.subscription.id)
     let url = '/cart/add.js'
-    console.log('Cart items: ', items, url)
+
+    //console.log('Cart items: ', items, url)
     //let url =  this.host + 'cart/add.js'; // test API
     await axios.post(url, {
       headers: {
@@ -61,7 +63,6 @@ const createSubscription = async () => {
 const moveToCheckout = async () => {
   await createSubscription()
   subscriptionEvent('create-subscription')
-  console.log()
   //window.location.href = '/checkout'
 }
 </script>
