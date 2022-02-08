@@ -2,7 +2,7 @@
 import { defineProps, defineEmits } from 'vue'
 import BundlePurchaseOptionsInput from './BundlePurchaseOptionsInput'
 
-const props = defineProps({
+defineProps({
   plans: {
     type: Array,
     required: true,
@@ -40,7 +40,8 @@ const onetime = {
         checked="checked"
         class="b-purchase__input"
       />
-      {{ $t('one_time_purchase') }},  {{ $t('save') }} {{ props.settings.bundleDiscount }}%
+<!--      {{ $t('one_time_purchase') }},  {{ $t('save') }} {{ props.settings.bundleDiscount }}%-->
+      {{ $t('one_time_purchase') }}
     </label>
     <BundlePurchaseOptionsInput
       v-for="plan in plans"

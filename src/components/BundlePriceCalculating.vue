@@ -31,11 +31,11 @@ const discountPrice = computed(() => {
 <template>
   <div class="b-heading">
     <div class="b-heading__title">
-      {{ $t('title') }}
+      <span v-if='subscription.active'>{{ $t('subs_title') }}</span>
+      <span v-else>{{ $t('title') }}</span>
     </div>
     <div v-if="discount" class="b-heading__discount">
-      {{ $t('discount_text') }}
-      {{ discount }}%
+      {{ discount }}% {{ $t('discount_text') }}
     </div>
     <div class="b-heading__selecting">
       ({{ props.selecting.length }}/{{ props.settings.maxItems }} {{ $t('selected_text') }})
