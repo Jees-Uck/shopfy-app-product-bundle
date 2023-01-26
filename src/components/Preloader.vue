@@ -1,12 +1,17 @@
 <template>
   <div class="spinner-wrap">
-    <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+    <div class="lds-ellipsis">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Spinner"
+  name: 'Spinner',
 }
 </script>
 

@@ -1,11 +1,25 @@
 {
-  "title": "Create your planted.set ",
-  "discount_text": "and save",
+  "title": "Create your planted.set and save",
+  "subs_title": "Create your subscription and save",
+  "discount_text": "",
   "total_text": "Total",
   "selected_text": "Selected",
   "selected_products": "Selected Products:",
   "cart_text": "Add to cart",
+  "buy_now": "Buy now",
+  "subscribe_now": "Subscribe now",
   "cart_message": "Your planted.set has been added to the cart. The discount will be deducted at checkout. ",
   "checkout_text": "Buy Now",
-  "empty_text": "There are no products available in this set. \nSelect another set please"
+  "empty_text": "There are no products available in this set. \nSelect another set please",
+  "subscription": "subscription",
+  "save": "save",
+  "day": "day",
+  "week": "week",
+  "month" : "month",
+  "days": "days",
+  "weeks": "weeks",
+  "months" : "months",
+  "subscription_title": "Subscribe, get a new delivery every 3 weeks and spend less.",
+  "subscription_message": "Please wait a minute, your subscription is in process...",
+  "one_time_purchase": "One time purchase"
 }

@@ -1,11 +1,25 @@
 {
-  "title": "Crea il tuo planted.set  ",
-  "discount_text": "e risparmia",
+  "title": "Crea il tuo planted.set e assicurati",
+  "subs_title": "Crea il tuo planted o abbonamento personale e assicurati",
+  "discount_text": "di sconto",
   "total_text": "Totale",
   "selected_text": "Selezionato",
   "selected_products": " prodotti selezionati:",
   "cart_text": "aggiungi al carrello",
+  "buy_now": "Iscriviti ora",
+  "subscribe_now": "Subscribe now",
   "cart_message": "Il tuo set di piante è stato aggiunto al carrello. Lo sconto sarà detratto alla cassa",
   "checkout_text": "Acquista ora",
-  "empty_text": "Non ci sono prodotti disponibili in questo set.\nSeleziona un altro set per favore"
+  "empty_text": "Non ci sono prodotti disponibili in questo set.\nSeleziona un altro set per favore",
+  "subscription": "abbonati",
+  "save": "salvare",
+  "day": "giorno",
+  "week": "settimana",
+  "month" : "mese",
+  "days": "giorni",
+  "weeks": "settimane",
+  "months" : "mesi",
+  "subscription_title": "Abbonati, ricevi una nuova consegna ogni 3 settimane e spendi meno",
+  "subscription_message": "Per favore aspetta un minuto, il tuo abbonamento è in corso...",
+  "one_time_purchase": "Acquisto una tantum"
 }

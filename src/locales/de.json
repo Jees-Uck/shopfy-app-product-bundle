@@ -1,11 +1,25 @@
 {
-  "title": "Erstelle dein planted.set ",
-  "discount_text": "und sichere",
+  "title": "Erstelle dein persönliches planted.set und sichere",
+  "subs_title": "Erstelle dein persönliches Abo und sichere",
+  "discount_text": "Rabat",
   "total_text": "Insgesamt",
   "selected_text": "Ausgewählt",
   "selected_products": "Ausgewählte Produkte:",
   "cart_text": "Zum Einkaufswagen hinzufügen",
+  "buy_now": "Jetzt kaufen",
+  "subscribe_now": "Jetzt abonnieren",
   "cart_message": "Dein planted.set wurde zum Warenkorb hinzugefügt. Der Rabatt wird im Checkout abgezogen.",
   "checkout_text": "Jetzt kaufen",
-  "empty_text": "Es sind keine Produkte in diesem Set vorhanden.\nWählen Sie ein anderes Set bitte"
+  "empty_text": "Es sind keine Produkte in diesem Set vorhanden.\nWählen Sie ein anderes Set bitte",
+  "subscription": "Abonnement",
+  "save": "spare",
+  "day": "Tag",
+  "week": "Woche",
+  "month" : "Monat",
+  "days": "Tage",
+  "weeks": "Wochen",
+  "months" : "Monate",
+  "subscription_title": "Abonnieren, alle 3 Wochen liefern lassen und sparen.",
+  "subscription_message": "Bitte warte einen Moment, Dein Abonnement ist in Bearbeitung...",
+  "one_time_purchase": "Einmaliger Kauf"
 }

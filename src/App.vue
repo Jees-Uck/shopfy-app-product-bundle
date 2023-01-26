@@ -1,406 +1,300 @@
-<template>
-  <div id="app">
-    <input v-model="$i18n.locale"
-           id="vue-lang"
-           class="vue-lang"/>
-    <input v-model="sellingPlan"
-           id="selling-plan-vue"
-           class="selling-plan"
-           placeholder="Selling Plan"
-           @input="resetSelecting">
-    <input v-model="recurringPeriod" id="recurring-vue" placeholder="Recurring">
-    <Spinner v-if="loading"></Spinner>
-    <div v-else-if="products.length" class="bundle-container">
-      <div class="b-heading">
-        <div class="b-heading__title">{{ $t('title') }}</div>
-        <div v-if="discount" class="b-heading__discount">
-          {{ $t('discount_text') }}
-          {{ discount }}%
-        </div>
-        <div class="b-heading__selecting">
-          ({{ selecting.length }}/{{ maxItems }}
-          {{ $t('selected_text') }})
-        </div>
-      </div>
-      <div v-if="discount">
-        <div class="total">{{ $t('total_text') }}:
-          <div class="new-price">
-            {{ ((total - total * discount / 100) / 100).toFixed(2) }}
-            {{ currency }}
-          </div>
-          <div v-if="total" class="old-price">
-            {{ (total / 100).toFixed(2) }}
-            {{ currency }}
-          </div>
-        </div>
-      </div>
-      <div v-else class="total">
-        {{ (total / 100).toFixed(2) }}
-        {{ currency }}
-      </div>
-      <ProductList
-          :products="products"
-          :currency="currency"
-          :add-disable="addIsDisable"
-          :selling-plan="sellingPlan"
-          @add-product="addProduct"
-          @remove-product="removeProduct"
-      ></ProductList>
-      <div class="selected-products">
-        <div v-show="resultList.length" class="selected-title">
-          {{ $t('selected_products') }}
-        </div>
-        <div v-for="item in resultList"
-           :key="item.id"
-           class="list-item">
-          <div>{{ item.title }} X{{ item.quantity }}</div>
-        </div>
-        <transition name="slide-fade">
-          <div v-show="messageVisible" class="cart-message">
-            {{ $t('cart_message') }}
-          </div>
-        </transition>
-      </div>
-      <button
-          :disabled="cartIsDisable"
-          @click.prevent="addToCart"
-          class="cart-add"
-          id="add-bundle">{{ $t('cart_text') }}
-      </button>
-      <button v-if="isOneTimePurchase"
-          :disabled="cartIsDisable"
-          @click.prevent="moveToCheckout"
-          class="buy-now"
-          id="buy-now">{{ $t('checkout_text') }}
-      </button>
-    </div>
-    <div v-else>
-      <p class="empty">
-        {{ $t('empty_text') }}
-      </p>
-    </div>
-  </div>
-</template>
+<script setup>
+import { ref, computed } from 'vue'
+import { onMounted } from 'vue'
+import axios from 'axios'
+import Preloader from './components/Preloader'
+import ProductList from './components/ProductList'
+import BundlePriceCalculating from './components/BundlePriceCalculating'
+import BundlePurchaseActions from './components/BundlePurchaseActions'
+import BundleResultList from './components/BundleResultList'
+import BundlePurchaseOptions from './components/BundlePurchaseOptions'
 
-<script>
+// Collect raw data
+const handles = []
+const rawProductsData = []
+const bundleSettings = ref({
+  bundleDiscount: parseInt(document.getElementById('discount-value').innerText),
+  maxItems: document.getElementById('max-items').innerText,
+  currency: document.getElementById('currency').innerText,
+})
 
-import ProductList from "./components/ProductList";
-import axios from "axios";
-import Spinner from "./components/Spinner";
+const createHandleList = () => {
+  const handleItems = document.querySelectorAll('.handle-list__item')
+  for (let i = 0; i < handleItems.length; i++) {
+    handles.push(handleItems[i].innerText)
+  }
+}
+//const host = 'https://test.web-space.com.ua/'
 
-export default {
-  name: 'App',
-  data() {
-    return {
-      handles: [],
-      response_products: [],
-      products: [],
-      selecting: [],
-      resultList: [],
-      cartItems: "",
-      maxItems: 0,
-      quantity: 0,
-      total: 0,
-      sellingPlan: "",
-      discount: 0,
-      currency: "",
-      langs: ['en', 'de', 'fr', 'it'],
-      messageVisible: false,
-      checkoutLink: "",
-      loading: true,
-      plansAreEqual: true,
-      recurringPeriod: "",
-      host: "https://test.web-space.com.ua/",
-    }
-  },
-  components: {
-    Spinner,
-    ProductList
-  },
-  methods: {
-    addProduct(product) {
-      this.selecting.push(product)
-      product.quantity++
-      let index = this.resultList.findIndex(item => item.id === product.id)
-      if (index === -1) {
-        this.resultList.push(product)
-      }
-      this.total += product.price
-    },
-    removeProduct(id) {
-      let index = this.selecting.findIndex(item => item.id === id)
-      this.total -= this.selecting[index].price
-      this.selecting[index].quantity--
-      this.selecting.splice(index, 1)
-      let idx = this.resultList.findIndex(item => item.id === id)
-      if (!this.resultList[idx].quantity) {
-        this.resultList.splice(idx, 1)
-      }
-    },
-    getAppDataFromHtml() {
-      const handleList = document.querySelectorAll('.handle-list__item');
-      for (let i = 0; i < handleList.length; i++) {
-        this.handles.push(handleList[i].innerText);
-      }
-      this.maxItems = document.getElementById('max-items').innerText;
-      this.discount = parseInt(document.getElementById('discount-value').innerText);
-      this.currency = document.getElementById('currency').innerText;
-    },
-    async getProducts() {
-      for (let i = 0; i < this.handles.length; i++) {
-        try {
-          //const response = await axios.get(this.host + this.handles[i])
-          const response = await axios.get(this.handles[i] + '.js') //in shopify
-          let data = response.data
-          this.response_products.push(data);
-        } catch (err) {
-          console.error('Product fetched with error: ', err)
-        }
-      }
-    },
-    copyProductsWithQuantity() {
-      this.products = this.response_products.map(product => {
-        let sellingPlans = []
+const sellingPlans = ref({})
 
-        product.variants[0].selling_plan_allocations.forEach(item => {
-          sellingPlans.push(item.selling_plan_id.toString())
-          sellingPlans.sort()
-        })
+const getSellingPlans = async () => {
+  try {
+    //const response = await axios.get(host + 'set')
+    const response = await axios.get(location.href + '.js') //in Shopify
+    sellingPlans.value = response.data.selling_plan_groups[0].selling_plans
+  } catch (err) {
+    console.error('Selling plans fetched with error: ', err)
+  }
+}
 
-        return {
-          id: product.variants[0].id,
-          title: product.title,
-          price: product.variants[0].price,
-          featured_image: product.featured_image,
-          available: product.variants[0].available,
-          sellingPlanIDs: sellingPlans,
-          quantity: 0
-        }
-      })
-    },
-
-    resetSelecting() {
-      if (!this.plansAreEqual) {
-        this.products.forEach(product => {
-          product.quantity = 0
-        })
-        this.selecting = [];
-        this.resultList = [];
-        this.total = 0;
-      }
-    },
-
-    checkProductsPlans() {
-      const plansToCompare = this.products.map((product) => {
-        return {
-          plans: product.sellingPlanIDs.join('')
-        }
-      })
-
-      for (let i = 0; i < plansToCompare.length; i++) {
-        if (plansToCompare[i].plans !== plansToCompare[i + 1].plans) {
-          this.plansAreEqual = false
-          return
-        }
-      }
-    },
-    async updateCartCounter() {
-      const counter = document.getElementById('CartToggleItemCount');
-      try {
-        const cartData = await axios.get('/cart.js');
-        const cart = cartData.data;
-        if (cart.item_count) {
-          counter.innerHTML = cart.item_count;
-          counter.classList.remove('hidden');
-        }
-      } catch (err) {
-        console.error('Update counter error ', err)
-      }
-    },
-    setDiscount() {
-      const discount = 'Bundle_Discount_' + this.discount;
-      localStorage.setItem('discount', discount);
-    },
-    displayMessage() {
-      this.messageVisible = true;
-      setTimeout(() => {
-        this.messageVisible = false
-      }, 4000)
-    },
-    async addToCart() {
-      try {
-        this.cartItems = this.resultList.map(product => {
-          return {
-            id: product.id,
-            price: product.price,
-            quantity: product.quantity,
-            selling_plan: this.sellingPlan
-          };
-        });
-        let items = this.cartItems;
-        let url = '/cart/add.js';
-        //console.log('Cart items: ', items)
-        //let url =  this.host + 'cart/add.js'; // test API
-        await axios.post(url, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          items
-        })
-        await this.updateCartCounter();
-        if (!this.sellingPlan) {
-          this.setDiscount();
-        }
-        this.displayMessage();
-      } catch (err) {
-        console.error('Add to cart error: ', err)
-      }
-      this.copyProductsWithQuantity();
-      this.selecting = [];
-      this.resultList = [];
-      this.total = 0;
-    },
-
-    createCheckoutLink() {
-      let products = this.resultList.map(product => {
-        return product.id + ':' + product.quantity
-      })
-      if (!this.sellingPlan) {
-        this.checkoutLink = '/cart/' + products
-            + '?discount=Bundle_Discount_' + this.discount
-            + '&selling_plan=' + this.sellingPlan
-      } else {
-        this.checkoutLink = '/cart/' + products
-            + '&selling_plan=' + this.sellingPlan
-      }
-    },
-    async moveToCheckout() {
-      await this.createCheckoutLink();
-      window.location.href = this.checkoutLink;
-    },
-    getRecurringAttributes () {
-      let cartAttributes = document.querySelectorAll('.sls-cart-attribute');
-      console.log(cartAttributes)
-    }
-
-  },
-
-  created() {
-    this.getAppDataFromHtml()
-  },
-  async mounted() {
-    await this.getProducts();
-    await this.copyProductsWithQuantity();
-    this.loading = false;
-    this.checkProductsPlans();
-    this.getRecurringAttributes ();
-  },
-  computed: {
-    addIsDisable() {
-      return this.selecting.length >= this.maxItems
-    },
-    cartIsDisable() {
-      return this.selecting.length < this.maxItems
-    },
-    isOneTimePurchase () {
-      return !this.sellingPlan && !this.recurringPeriod
+const getProducts = async () => {
+  for (let i = 0; i < handles.length; i++) {
+    try {
+      //const response = await axios.get(host + handles[i]) // test
+      const response = await axios.get(handles[i] + '.js') //in Shopify
+      let data = response.data
+      rawProductsData.push(data)
+    } catch (err) {
+      console.error('Product fetched with error: ', err)
     }
   }
 }
+
+// Prepare app data
+// Set general app variables
+const selecting = ref([])
+const resultList = ref([])
+const sellingPlan = ref('')
+const total = ref(0)
+const loading = ref(true)
+const products = ref([])
+const purchaseEvent = ref('')
+const messageIsVisible = ref(false)
+
+// Create product list from raw data
+const createProductList = () => {
+  products.value = rawProductsData.map(product => {
+    let sellingPlans = []
+    let priceAllocations = []
+    product.variants[0].selling_plan_allocations.forEach(item => {
+      let priceAllocation = {
+        id: item.selling_plan_id,
+        price: item.price,
+      }
+      sellingPlans.push(item.selling_plan_id)
+      priceAllocations.push(priceAllocation)
+    })
+
+    return {
+      id: product.variants[0].id,
+      title: product.title,
+      price: product.variants[0].price,
+      featured_image: product.featured_image,
+      available: product.variants[0].available,
+      priceAllocations: priceAllocations,
+      sellingPlanIDs: sellingPlans,
+      isInBundle: true,
+      quantity: 0,
+    }
+  })
+}
+
+const updatedProducts = computed(() => {
+  return [...products.value].filter(product  => product.isInBundle )
+})
+
+const subscription = ref({
+  active: false,
+  id: null,
+  name: '',
+  discount: '',
+})
+
+const checkProductsPlans = () => {
+  if (subscription.value.active) {
+    products.value.forEach(product => {
+      product.sellingPlanIDs.includes(subscription.value.id)
+        ? (product.isInBundle = true)
+        : (product.isInBundle = false)
+    })
+  } else {
+    products.value.forEach(product => {
+      product.isInBundle = true
+    })
+  }
+}
+
+const addProduct = product => {
+  selecting.value.push(product)
+  product.quantity++
+  let index = resultList.value.findIndex(item => item.id === product.id)
+  if (index === -1) {
+    resultList.value.push(product)
+  }
+  total.value += product.price
+  messageVisible.value = false
+}
+
+const removeProduct = id => {
+  let index = selecting.value.findIndex(item => item.id === id)
+  total.value -= selecting.value[index].price
+  selecting.value[index].quantity--
+  selecting.value.splice(index, 1)
+  let resultIndex = resultList.value.findIndex(item => item.id === id)
+  if (!resultList.value[resultIndex].quantity) {
+    resultList.value.splice(resultIndex, 1)
+  }
+}
+
+const setPurchase = plan => {
+  if (plan.id) {
+    subscription.value.active = true
+    subscription.value.id = plan.id
+    subscription.value.name = plan.name
+    subscription.value.discount = plan.price_adjustments[0].value
+  } else {
+    subscriptionEmptyState()
+  }
+  checkProductsPlans()
+  resetSelecting()
+}
+
+const resetSelecting = () => {
+  products.value.forEach(product => {
+    product.quantity = 0
+  })
+  selecting.value = []
+  resultList.value = []
+  total.value = 0
+}
+
+const subscriptionEmptyState = () => {
+  subscription.value.active = false
+  subscription.value.id = null
+  subscription.value.name = 'onetime'
+  subscription.value.discount = bundleSettings.value.bundleDiscount
+}
+
+const showMessage = () => {
+  messageIsVisible.value = true
+  setTimeout(() => {
+    messageIsVisible.value = false
+    purchaseEvent.value = ''
+  }, 4000)
+}
+
+const updateCartCounter = async () => {
+  const counter = document.getElementById('CartToggleItemCount')
+  try {
+    const cartData = await axios.get('/cart.js')
+    const cart = cartData.data
+    if (cart.item_count) {
+      counter.innerHTML = cart.item_count
+      counter.classList.remove('hidden')
+    }
+  } catch (err) {
+    console.error('Update counter error ', err)
+  }
+}
+
+onMounted(async () => {
+  await createHandleList()
+  await getSellingPlans()
+  await getProducts()
+  await createProductList()
+  await checkProductsPlans()
+  loading.value = false
+})
+
+const messageVisible = ref(false)
+
+const purchaseBundleAfterActions = async event => {
+  purchaseEvent.value = event
+  await resetSelecting()
+  await createProductList()
+  await updateCartCounter()
+  selecting.value = []
+  resultList.value = []
+  total.value = 0
+  showMessage(event)
+}
+
+const addIsDisable = computed(() => {
+  return selecting.value.length >= bundleSettings.value.maxItems
+})
+
+const purchaseIsDisable = computed(() => {
+  return selecting.value.length < bundleSettings.value.maxItems
+})
+
+const messageStyle = computed(() => {
+  return messageVisible.value ? 'expanded' : 'collapsed'
+})
+
 </script>
+<template>
+  <input v-model="$i18n.locale" id="vue-lang" class="vue-lang" />
+  <Preloader v-if="loading"></Preloader>
+  <div v-else-if="products.length" class="bundle-container">
+    <BundlePurchaseOptions
+      v-if="subscription"
+      :settings="bundleSettings"
+      :plans="sellingPlans"
+      :subscription="subscription"
+      @update-subscription="setPurchase($event)"
+    />
+    <BundlePriceCalculating
+      :settings="bundleSettings"
+      :subscription="subscription"
+      :total="total"
+      :selecting="selecting"
+    />
+    <ProductList
+      :subscription="subscription.active"
+      :products="updatedProducts"
+      :currency="bundleSettings.currency"
+      :add-disable="addIsDisable"
+      :selling-plan="sellingPlan"
+      @add-product="addProduct"
+      @remove-product="removeProduct"
+    ></ProductList>
+    <BundleResultList :products="resultList" />
+    <div class="messages" :class="messageStyle">
+      <transition-group name="fade">
+        <div v-if="purchaseEvent === 'cart-add'" class="cart-message">
+          {{ $t('cart_message') }}
+        </div>
+        <div v-if="purchaseEvent === 'create-subscription'" class="cart-message">
+          {{ $t('subscription_message') }}
+        </div>
+      </transition-group>
+    </div>
+    <BundlePurchaseActions
+      :products="resultList"
+      :subscription="subscription"
+      :purchaseIsDisable="purchaseIsDisable"
+      :discount="bundleSettings.bundleDiscount"
+      @create-subscription="purchaseBundleAfterActions"
+      @cart-add="purchaseBundleAfterActions"
+    />
+  </div>
+  <div v-else>
+    <p class="empty">
+      {{ $t('empty_text') }}
+    </p>
+  </div>
+</template>
 
 <style>
-#app {
-}
-.bundle-container {
-  max-width: 100%;
-  min-width: 300px;
-  margin: 0 auto;
-  flex-direction: column;
-  display: flex;
-  justify-content: flex-start;
-}
-.selected-products {
+.messages {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  margin-bottom: 25px;
-  min-height: 25px;
+  display: block;
 }
-.cart-add {
-  display: inline;
-  color: #FFF;
-  background-color: #734A9E;
-  padding: 15px;
-  border-width: 0;
-  border-radius: 30px;
-  margin-bottom: 30px;
-  cursor: pointer;
+.messages.expanded {
+  height: 60px;
 }
-.cart-add[disabled] {
-  opacity: .3;
-}
-.total {
-  margin-bottom: 50px;
-  font-weight: bold;
-  color: #734A9E;
-}
-.b-heading {
-  margin-bottom: 15px;
-}
-.selected-title {
-  font-weight: bold;
-}
-.old-price {
-  text-decoration: line-through;
-}
-.new-price {
-  margin-right: 10px;
-}
-.cart-message {
-  position: absolute;
-  width: 100%;
-}
-.slide-fade-enter-active, .slide-fade-leave-active {
-  transition: all .3s;
-}
-.slide-fade-enter, .slide-fade-leave-to /* .fade-leave-active below version 2.1.8 */
-{
-  opacity: 0;
+.messages.collapsed {
   height: 0;
+  transition: height 0.2s;
 }
-.slide-fade-enter-from,
-.slide-fade-leave-to {
+.fade-enter-active {
+  transition: all 0.2s ease 0.1s;
+}
+.fade-leave-active {
+  transition: opacity 0s;
+}
+.fade-enter-from {
   opacity: 0;
-  height: 0;
-}
-.slide-fade-leave-from,
-.slide-fade-enter-to {
-  opacity: 1;
-  height: auto;
-}
-.carousel {
-  width: 100%;
-}
-.b-heading__title, .b-heading__discount {
-}
-.buy-now {
-  background-color: #b2d436;
-  border-color: #b2d436;
-  border-width: 0;
-  border-radius: 30px;
-  margin-bottom: 30px;
-  padding: 14px 50px;
-  min-width: 250px;
-  transition: opacity ease .2s;
-  color: #FFFFFF;
-}
-button {
-  cursor: pointer;
-}
-button:disabled, button[disabled] {
-  opacity: .5;
 }
 </style>
